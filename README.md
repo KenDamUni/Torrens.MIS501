@@ -12,5 +12,6 @@ COVID restrictions.
 As part of the development team in the Creative software solutions, you are required to design and
 develop the mobile ordering program. Before the application release deadline, you are required to
 submit the following deliverables:
+<br/>
 1- A design of the application process using a Flow Chart diagram
 2- Python program for the three tasks as per the description that follows in this document
