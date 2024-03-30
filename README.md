@@ -2,7 +2,7 @@ Assessment 2 - Group
 In response to the issues raised in the case study provided, design and develop Python programs that
 address business needs. You are required to undertake three tasks using the concepts learned in
 Modules 1, 2, 3 and 4. Please refer to the Instructions for details on how to complete this task.
-Case Study
+<h1>Case Study</h1>
 Online ordering has enabled many restaurants to manage their peak business hours very effectively.
 Thanks to online ordering, many people manage to prevent the painful experience of wasting time in
 a long queue.
