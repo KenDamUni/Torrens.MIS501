@@ -21,7 +21,7 @@ def validate_password(password):
     Password must start with a letter and end with a digit. 
     It must contain either '@' or '&' or '#'.
     '''
-    return re.match(r'^[a-zA-Z][@&#]\d+$', password)
+    return re.match(r'^[a-zA-Z].*[@&#].*\d$', password)
 
 
 def validate_dob(dob):
@@ -51,30 +51,37 @@ def sign_up():
     '''
     Register a new user.
     '''
+    step = 1
     while True:
-        full_name = input("Enter a full name: ")
-        if len(full_name) < 3:
-            print("Name must be at least 3 characters long.")
-        else:
+        if step == 1:
+            full_name = input("Enter a full name: ")
+            if len(full_name) < 3:
+                print("Name must be at least 3 characters long.")
+            else:
+                step += 1
+        if step == 2:
             user_mobile_number = input("Enter a mobile number: ")
             if not validate_mobile_number(user_mobile_number):
                 print("Invalid mobile number. Please enter a valid number.")
             else:
-                password = input("Enter a password: ")
-                if not validate_password(password):
-                    print("Invalid password. Please enter a valid password.")
-                else:
-                    dob = input("Enter your date of birth (dd/mm/yyyy): ")
-                    if not validate_dob(dob):
-                        print(
-                            "Invalid date of birth. Please enter a valid date of birth.")
-                    else:
-                        usernames.append(full_name)
-                        passwords.append(password)
-                        user_mobile_numbers.append(user_mobile_number)
-                        user_dob.append(dob)
-                        print("User registered successfully.")
-                        break
+                step += 1
+        if step == 3:
+            password = input("Enter a password: ")
+            if not validate_password(password):
+                print("Invalid password. Please enter a valid password.")
+            else:
+                step += 1
+        if step == 4:
+            dob = input("Enter your date of birth (dd/mm/yyyy): ")
+            if not validate_dob(dob):
+                print("Invalid date of birth. Please enter a valid date of birth.")
+            else:
+                usernames.append(full_name)
+                passwords.append(password)
+                user_mobile_numbers.append(user_mobile_number)
+                user_dob.append(dob)
+                print("User registered successfully.")
+                break
 
 
 def sign_in():
@@ -109,7 +116,7 @@ def process():
     SIGN_UP = '1'
     SIGN_IN = '2'
     QUIT = '3'
-    print(f"\n{SIGN_UP}- Sign up\n2- {SIGN_IN}\n{QUIT}- Quit application")
+    print(f"\n{SIGN_UP}- Sign up\n{SIGN_IN}- Sign In\n{QUIT}- Quit application")
     choice = input("Enter your choice: ")
     if choice == SIGN_UP:
         sign_up()
