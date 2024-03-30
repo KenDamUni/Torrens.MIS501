@@ -1,31 +1,134 @@
-def signup(self):
-    username = input("Enter a username: ")
-    password = input("Enter a password: ")
-    if username in self.users:
-        print("Username already exists. Please choose another one.")
-    else:
-        self.users[username] = password
-        print("User created successfully!")
+import re
+
+CURRENT_YEAR = 2021
+MOBILE_NUMBER_PATTERN = r'^0\d{9}$'
+PASSWORD_PATTERN = r'^[a-zA-Z][@&#]\d+$'
+DATE_FORMAT = r'^\d{2}/\d{2}/\d{4}$'
 
 
-def signin(self):
-    username = input("Enter your username: ")
-    password = input("Enter your password: ")
-    if username in self.users and self.users[username] == password:
-        print("Login successful!")
-    else:
-        print("Invalid username or password.")
+def validate_mobile_number(number):
+    '''
+    Phone number must start with '0' and have 10 digits.
+    '''
+    if number in user_mobile_numbers:
+        print("Mobile number already exists. Please choose another one.")
+        return False
+    return re.match(MOBILE_NUMBER_PATTERN, number)
 
 
-def run(self):
-    while True:
-        print("\n1- Sign up\n2- Sign in\n3- Quit application")
-        choice = input("Enter your choice: ")
-        if choice == '1':
-            self.signup()
-        elif choice == '2':
-            self.signin()
-        elif choice == '3':
-            break
+def validate_password(password):
+    '''
+    Password must start with a letter and end with a digit. 
+    It must contain either '@' or '&' or '#'.
+    '''
+    return re.match(r'^[a-zA-Z][@&#]\d+$', password)
+
+
+def validate_dob(dob):
+    '''
+    Date of birth must be in the format dd/mm/yyyy.
+    '''
+    is_valid = True
+    if re.match(DATE_FORMAT, dob):
+        day, month, year = map(int, dob.split('/'))
+        if (day < 1 or day > 31) and (month < 1 or month > 12) and (year < 1900 or
+                                                                    (year - CURRENT_YEAR) < 21):
+            is_valid = False
+        elif (month == 2 and day > 29):
+            is_valid = False
+        elif (month == 2 and day == 29 and year % 4 != 0):
+            is_valid = False
+        elif (month in [4, 6, 9, 11] and day > 30):
+            is_valid = False
         else:
-            print("Invalid choice. Please choose a valid option.")
+            is_valid = True
+    else:
+        is_valid = False
+    return is_valid
+
+
+def sign_up():
+    '''
+    Register a new user.
+    '''
+    while True:
+        full_name = input("Enter a full name: ")
+        if len(full_name) < 3:
+            print("Name must be at least 3 characters long.")
+        else:
+            user_mobile_number = input("Enter a mobile number: ")
+            if not validate_mobile_number(user_mobile_number):
+                print("Invalid mobile number. Please enter a valid number.")
+            else:
+                password = input("Enter a password: ")
+                if not validate_password(password):
+                    print("Invalid password. Please enter a valid password.")
+                else:
+                    dob = input("Enter your date of birth (dd/mm/yyyy): ")
+                    if not validate_dob(dob):
+                        print(
+                            "Invalid date of birth. Please enter a valid date of birth.")
+                    else:
+                        usernames.append(full_name)
+                        passwords.append(password)
+                        user_mobile_numbers.append(user_mobile_number)
+                        user_dob.append(dob)
+                        print("User registered successfully.")
+                        break
+
+
+def sign_in():
+    username = input("Enter your full name: ")
+    password = input("Enter your password: ")
+    if username in usernames:
+        index = usernames.index(username)
+        if password == passwords[index]:
+            print("Login successful!")
+        else:
+            print("Invalid password.")
+    else:
+        print("Invalid username.")
+
+
+def get_user_details(username):
+    if username in usernames:
+        index = usernames.index(username)
+        # Return user information in a tuple
+        user_info = (username, user_mobile_numbers[index], user_dob[index])
+    else:
+        user_info = None
+
+    return user_info
+
+
+def process():
+    '''
+    Process user choice.
+    '''
+    # Define constants for choice
+    SIGN_UP = '1'
+    SIGN_IN = '2'
+    QUIT = '3'
+    print(f"\n{SIGN_UP}- Sign up\n2- {SIGN_IN}\n{QUIT}- Quit application")
+    choice = input("Enter your choice: ")
+    if choice == SIGN_UP:
+        sign_up()
+    elif choice == SIGN_IN:
+        sign_in()
+    elif choice == QUIT:
+        return False
+    else:
+        print("Invalid choice. Please choose a valid option.")
+
+    return True
+
+
+# Main Program
+usernames = []
+passwords = []
+user_mobile_numbers = []
+user_dob = []
+
+while True:
+    if not process():
+        break
