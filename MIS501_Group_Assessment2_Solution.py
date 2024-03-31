@@ -2,8 +2,9 @@ import re
 # Define application constants
 CURRENT_YEAR = 2021
 MOBILE_NUMBER_PATTERN = r'^0\d{9}$'
-PASSWORD_PATTERN = r'^[a-zA-Z][@&#]\d+$'
+PASSWORD_PATTERN = r'^[a-zA-Z].*[@&#].*\d$'
 DATE_FORMAT = r'^\d{2}/\d{2}/\d{4}$'
+MAX_VALUE_OF_LOGIN_ATTEMPTS = 3
 
 ################### Task 2A ###################
 def validate_mobile_number(number):
@@ -21,7 +22,7 @@ def validate_password(password):
     Password must start with a letter and end with a digit. 
     It must contain either '@' or '&' or '#'.
     '''
-    return re.match(r'^[a-zA-Z].*[@&#].*\d$', password)
+    return re.match(PASSWORD_PATTERN, password)
 
 
 def validate_dob(dob):
@@ -76,15 +77,14 @@ def sign_up():
             if not validate_dob(dob):
                 print("Invalid date of birth. Please enter a valid date of birth.")
             else:
-                user_full_names.append(full_name)
+                user_full_names.append(full_name.strip())
                 user_passwords.append(password)
-                user_mobile_numbers.append(user_mobile_number)
-                user_dobs.append(dob)
+                user_mobile_numbers.append(user_mobile_number.strip())
+                user_dobs.append(dob.strip())    
                 print("User registered successfully.")
                 break
 
 ################### Task 2B ###################
-
 def verify_user(username, password):
     '''
     Verify user by username (Mobile Number) and password.
@@ -107,22 +107,41 @@ def get_user_details(username):
 
     return user_info
 
-def reset_password(username):
-    '''
-    Reset password for a user.
-    '''
-    while True:
-        new_password = input("Enter new password: ")
-        if validate_password(new_password):
-            index = user_mobile_numbers.index(username)
-            user_passwords[index] = new_password
-            print("Password reset successfully.")
-        else:
-            print("Invalid password. Please enter a valid password.")
 
+def sign_in():
+    '''
+    Sign in a user.
+    '''
+    username = input("Please enter your Username (Mobile Number): ")
+    password = input("Please enter your password: ")
+    is_valid_user = False
+    if username in user_mobile_numbers:
+        counting_of_login_attempts = 0
+        while counting_of_login_attempts < MAX_VALUE_OF_LOGIN_ATTEMPTS:
+            is_valid_user = verify_user(username, password)
+            if is_valid_user:
+                print("You have successfully Signed in!")
+                break
+            else:
+                print("You have entered the wrong Password. Please try again.")
+                counting_of_login_attempts += 1
+                password = input("Please enter your password: ")
+
+        if not is_valid_user:
+            print("You have used the maximum number of attempts of Login")
+            # Request for password change after exceeding the maximum number of login attempts
+            request_change_password(username)
+        else:
+            # Process next step after signing in    
+            process_signed_in_user(username)
+    else:
+        print("You have not signed up with this Contact Number. Please sign up first.")
+
+
+################### Task 2C ###################
 def process_signed_in_user(username):
     '''
-    Process signed in user.
+    Process user actions after signing in.
     '''
     # Define user actions
     RESETTING_PASSWORD = '1'
@@ -131,31 +150,57 @@ def process_signed_in_user(username):
     if user_info:
         full_name, username, password, dob = user_info
         print(f"Welcome {full_name}!")
-        user_choice = input(f"Please enter {RESETTING_PASSWORD} for resetting password. 
+        while True:
+            user_choice = input(f"Please enter {RESETTING_PASSWORD} for resetting password. 
                             Please enter {SIGN_OUT} for signing out.")
-        if user_choice == RESETTING_PASSWORD:
-            reset_password(username)
+            if user_choice == RESETTING_PASSWORD:
+                reset_password(username)
+            else:
+                print("You have successfully signed out.")
+                break    
     else:
         print("User not found.")
+def request_change_password():
+    '''
+    Request for password change.
+    '''
+    print("Please reset the password by entering the following details:")
+    username_for_confirming = input("Please enter your Username (Mobile Number) to confirm: ")
 
-def sign_in():
-    username = input("Please enter your Username (Mobile Number): ")
-    password = input("Please enter your password: ")
-    is_valid_user = False
-    if username in user_mobile_numbers:
-        while True:
-            is_valid_user = verify_user(username, password)
-            if is_valid_user:
-                print("You have successfully Signed in!")
-                break
-            else:
-                print("Invalid password.")
+    if username_for_confirming in user_mobile_numbers:
+        index = user_mobile_numbers.index(username_for_confirming)
+        dob_for_confirming = input("Please enter your Date of Birth in DD/MM/YYYY format to confirm: ")
+        if dob_for_confirming == user_dobs[index]:
+            reset_password(username_for_confirming)
     else:
-        print("You have not signed up with this Contact Number. Please sign up first.")
+        print("User not found")
+
+def verify_user_info():
+
+    print("Please enter your Username (Mobile Number):")
+
+def reset_password(username):
+    '''
+    Reset password for a user.
+    '''
+    while True:
+        new_password = input("Enter new password: ")
+        if validate_password(new_password):
+            index = user_mobile_numbers.index(username)
+            old_password = user_passwords[index]
+            if old_password == new_password:
+                print("New password cannot be the same as the old password.")
+                continue
+            else:
+                user_passwords[index] = new_password
+                print("Password reset successfully.")
+                break
+        else:
+            print("Invalid password. Please enter a valid password.")
 
 
-################### Task 2C ###################
-        
+
+      
 # Define an entry function to process user choice
 def process():
     '''
