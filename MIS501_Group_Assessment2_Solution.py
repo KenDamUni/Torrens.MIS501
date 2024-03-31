@@ -165,12 +165,12 @@ def request_change_password():
     Request for password change.
     '''
     print("Please reset the password by entering the following details:")
-    username_for_confirming = input("Please enter your Username (Mobile Number) to confirm: ")
+    username_for_confirming = input("Please enter your Username (Mobile Number) to confirm: ").strip()
 
     if username_for_confirming in user_mobile_numbers:
         index = user_mobile_numbers.index(username_for_confirming)
         dob_for_confirming = input("Please enter your Date of Birth in DD/MM/YYYY format to confirm: ")
-        if dob_for_confirming == user_dobs[index]:
+        if dob_for_confirming.strip() == user_dobs[index]:
             reset_password(username_for_confirming)
     else:
         print("User not found")
