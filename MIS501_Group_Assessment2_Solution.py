@@ -157,8 +157,8 @@ def process_signed_in_user(username):
         full_name, username, password, dob = user_info
         print(f"Welcome {full_name}!")
         while True:
-            user_choice = input(f"Please enter {
-                                RESETTING_PASSWORD} for resetting password.\n Please enter {SIGN_OUT} for signing out.")
+            user_choice = input(f"Please enter {RESETTING_PASSWORD} for resetting password.
+                                \n Please enter {SIGN_OUT} for signing out.")
             if user_choice == RESETTING_PASSWORD:
                 reset_password(username)
             else:
