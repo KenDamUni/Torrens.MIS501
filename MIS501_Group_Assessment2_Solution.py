@@ -7,6 +7,8 @@ DATE_FORMAT = r'^\d{2}/\d{2}/\d{4}$'
 MAX_VALUE_OF_LOGIN_ATTEMPTS = 3
 
 ################### Task 2A ###################
+
+
 def validate_mobile_number(number):
     '''
     Phone number must start with '0' and have 10 digits.
@@ -80,11 +82,13 @@ def sign_up():
                 user_full_names.append(full_name.strip())
                 user_passwords.append(password)
                 user_mobile_numbers.append(user_mobile_number.strip())
-                user_dobs.append(dob.strip())    
+                user_dobs.append(dob.strip())
                 print("User registered successfully.")
                 break
 
 ################### Task 2B ###################
+
+
 def verify_user(username, password):
     '''
     Verify user by username (Mobile Number) and password.
@@ -94,6 +98,7 @@ def verify_user(username, password):
         return True
     return False
 
+
 def get_user_details(username):
     '''
     Get user details by username (Mobile Number).
@@ -101,7 +106,8 @@ def get_user_details(username):
     if username in user_mobile_numbers:
         index = user_mobile_numbers.index(username)
         # Return user information in a tuple
-        user_info = (user_full_names[index], username, user_passwords[index], user_dobs[index])
+        user_info = (user_full_names[index], username,
+                     user_passwords[index], user_dobs[index])
     else:
         user_info = None
 
@@ -130,9 +136,9 @@ def sign_in():
         if not is_valid_user:
             print("You have used the maximum number of attempts of Login")
             # Request for password change after exceeding the maximum number of login attempts
-            request_change_password(username)
+            request_change_password()
         else:
-            # Process next step after signing in    
+            # Process next step after signing in
             process_signed_in_user(username)
     else:
         print("You have not signed up with this Contact Number. Please sign up first.")
@@ -151,32 +157,39 @@ def process_signed_in_user(username):
         full_name, username, password, dob = user_info
         print(f"Welcome {full_name}!")
         while True:
-            user_choice = input(f"Please enter {RESETTING_PASSWORD} for resetting password.\n Please enter {SIGN_OUT} for signing out.")
+            user_choice = input(f"Please enter {
+                                RESETTING_PASSWORD} for resetting password.\n Please enter {SIGN_OUT} for signing out.")
             if user_choice == RESETTING_PASSWORD:
                 reset_password(username)
             else:
                 print("You have successfully signed out.")
-                break    
+                break
     else:
         print("User not found.")
+
+
 def request_change_password():
     '''
     Request for password change.
     '''
     print("Please reset the password by entering the following details:")
-    username_for_confirming = input("Please enter your Username (Mobile Number) to confirm: ").strip()
+    username_for_confirming = input(
+        "Please enter your Username (Mobile Number) to confirm: ").strip()
 
     if username_for_confirming in user_mobile_numbers:
         index = user_mobile_numbers.index(username_for_confirming)
-        dob_for_confirming = input("Please enter your Date of Birth in DD/MM/YYYY format to confirm: ")
+        dob_for_confirming = input(
+            "Please enter your Date of Birth in DD/MM/YYYY format to confirm: ")
         if dob_for_confirming.strip() == user_dobs[index]:
             reset_password(username_for_confirming)
     else:
         print("User not found")
 
+
 def verify_user_info():
 
     print("Please enter your Username (Mobile Number):")
+
 
 def reset_password(username):
     '''
@@ -198,8 +211,6 @@ def reset_password(username):
             print("Invalid password. Please enter a valid password.")
 
 
-
-      
 # Define an entry function to process user choice
 def process():
     '''
@@ -232,4 +243,3 @@ user_dobs = []
 while True:
     if not process():
         break
-    
