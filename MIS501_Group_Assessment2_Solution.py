@@ -34,12 +34,18 @@ def validate_dob(dob):
     is_valid = True
     if re.match(DATE_FORMAT, dob):
         day, month, year = map(int, dob.split('/'))
+        # Validate day, month, and year.
+        # Day must be between 1 and 31, month between 1 and 12,
+        # Year between 1900 and 2021 and age must be at least 21 years.
         if (day < 1 or day > 31) and (month < 1 or month > 12) and (year < 1900 or (year - CURRENT_YEAR) < 21):
             is_valid = False
+        # February has 29 days in a leap year
         elif (month == 2 and day > 29):
             is_valid = False
+        # February has 28 days in a non-leap year
         elif (month == 2 and day == 29 and year % 4 != 0):
             is_valid = False
+        # April, June, September, and November have 30 days
         elif (month in [4, 6, 9, 11] and day > 30):
             is_valid = False
         else:
