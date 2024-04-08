@@ -1,4 +1,5 @@
 Program start - Line 230 - Amend wording: Please Enter 1 for Sign up/Please Enter 2 for Sign in/Please Enter 3 for Quit.
 Program start - Line 236 - Add wording: Thank You for using the Application.
-Task 2B - Line 136 - Add wording: "Welcome username" after  print("You have successfully Signed in!")
+Task 2B - Line 666 - Amend wording: "Welcome username" after  print("You have successfully Signed in!")
 
+Task 2B - Line 136 - Add wording: "Welcome username" after  print("You have successfully Signed in!")
