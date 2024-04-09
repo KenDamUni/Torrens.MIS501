@@ -1,0 +1,43 @@
+#Program start - Line 230 - Amend wording: Please Enter 1 for Sign up/Please Enter 2 for Sign in/Please Enter 3 for Quit.
+#Program start - Line 236 - Add wording: Thank You for using the Application.
+#Task 2A - Line 66 - Amend wording: full_name = input("Please enter your name: ")
+#Task 2A - Line 72 - Amend wording: user_mobile_number = input("Please enter your mobile number: ")
+#Task 2A - Line 80 - Amend wording: password = input("Please enter your password: ")
+#Task 2A - New Line after line 81 - password_confirm = input("Please confirm your password: ")
+#Task 2A - Line 82 - Amend wording: print("You have entered the Date of Birth in invalid format. /n Please start again:".
+#Task 2A - Line 88 - Amend wording: print("Your password is not matching. /n Please start again:".        
+#Task 2A - Line 86 - Amend wording: dob = input("Please enter your Date of Birth # DD/MM/YYYY (No Space): ")
+#Task 2A - Line 94 - Amend wording: print("You have successfully Signed up.")
+#Task 2B - New Line - 136 - Add wording: "Welcome username" after print("You have successfully Signed in.")
+#Task 2B - Line 168 - Amend wording:  user_choice = input(f"Please enter {RESETTING_PASSWORD} for Resetting the password."
+#Task 2B - Line 169 - Amend wording:   f"\n Please enter {SIGN_OUT} for Signout.")
+#Task 2C - Logic - def process_signed_in_user(username) - wrong logic when enter 1 not for resetting pass but still singout???
+1- Sign up
+2- Sign In
+3- Quit application
+Enter your choice: 2
+Please enter your Username (Mobile Number): 0981234567
+Please enter your password: Ken@1234
+You have successfully Signed in!
+Welcome Ken Dam!
+Please enter 1 for resetting password.
+ Please enter 2 for signing out.  1
+You have successfully signed out.
+#Task 2C - Logic - def sign_in(): wrong logic as login attempt is 4 times instead of 3.
+1- Sign up
+2- Sign In
+3- Quit application
+Enter your choice: 2
+Please enter your Username (Mobile Number): 0981234567
+Please enter your password: KEn
+You have entered the wrong Password. Please try again.
+Please enter your password: ken@
+You have entered the wrong Password. Please try again.
+Please enter your password: Anz
+You have entered the wrong Password. Please try again.
+Please enter your password: jnd
+You have used the maximum number of attempts of Login
+Please reset the password by entering the following details:
+Please enter your Username (Mobile Number) to confirm: 
+#Task 2C - Line 179 - request_change_password() is lack of "Please re-enter your password: "
+#Task 2C - Line 210 - Amend wording: print("You cannot use the password used earlier.")
