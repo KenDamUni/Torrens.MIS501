@@ -138,6 +138,7 @@ def sign_in():
     is_valid_user = False
     if username in user_mobile_numbers:
         counting_of_login_attempts = 1  # Initialize counting of login attempts
+        # Check the maximum number of login attempts
         while counting_of_login_attempts < MAX_VALUE_OF_LOGIN_ATTEMPTS:
             is_valid_user = verify_user(username, password)
             if is_valid_user:
@@ -153,7 +154,7 @@ def sign_in():
         if not is_valid_user:
             print("You have used the maximum number of attempts of Login")
             # Request for password change after exceeding the maximum number of login attempts
-            request_change_password()
+            reset_password_by_unsuccessful_login()
         else:
             # Process next step after signing in
             process_signed_in_user(username)
@@ -178,7 +179,11 @@ def process_signed_in_user(username):
             user_choice = input(f"Please enter {RESETTING_PASSWORD} for Resetting password."
                                 f"\nPlease enter {SIGN_OUT} for Sign out.")
             if user_choice.strip() == RESETTING_PASSWORD:
-                reset_password(username)
+                current_pwd = input()
+                if verify_user(username, current_pwd):
+                    reset_password_from_menu(username)
+                else:
+                    print("You have entered wrong password.")
             elif user_choice.strip() == SIGN_OUT:
                 print("You have successfully signed out.")
                 break
@@ -186,47 +191,61 @@ def process_signed_in_user(username):
         print("User not found.")
 
 
-def request_change_password():
+def reset_password_by_unsuccessful_login():
     '''
-    Request for password change.
+    Reset password for a user after exceeding the maximum number of login attempts.
     '''
     print("Please reset the password by entering the following details:")
-    username_for_confirming = input(
-        "Please enter your Username (Mobile Number) to confirm: ").strip()
+    while True:
+        username_for_confirming = input(
+            "Please enter your Username (Mobile Number) to confirm: ").strip()
+        if username_for_confirming in user_mobile_numbers:
+            # Get the index of the username (Mobile Number)
+            index = user_mobile_numbers.index(username_for_confirming)
 
-    if username_for_confirming in user_mobile_numbers:
-        index = user_mobile_numbers.index(username_for_confirming)
-        dob_for_confirming = input(
-            "Please enter your Date of Birth in DD/MM/YYYY format to confirm: ")
-        if dob_for_confirming.strip() == user_dobs[index]:
-            reset_password(username_for_confirming)
-    else:
-        print("User not found")
+            dob_for_confirming = input(
+                "Please enter your Date of Birth in DD/MM/YYYY format to confirm: ")
+            if dob_for_confirming.strip() == user_dobs[index]:
+                new_password = input("Please enter new password: ")
+                if validate_password(new_password):
+                    confirm_password = input("Please re-enter password: ")
+                    if new_password != confirm_password:
+                        print("Passwords do not match. Please try again.")
+                    else:
+                        # validate if the new password is not the same as the old password
+                        if new_password == user_passwords[index]:
+                            print("You cannot use the password used earlier.")
+                        else:
+                            # Update the password
+                            user_passwords[index] = new_password
+                            print("Password reset successfully.")
+                            break
+                else:
+                    print("Invalid password. Please enter a valid password.")
+            else:
+                print("Date of Birth does not match.")
+        else:
+            print("User not found")
 
 
-def reset_password(username):
+def reset_password_from_menu(username):
     '''
-    Reset password for a user.
+    Reset password for a user from the menu.
     '''
     while True:
         new_password = input("Enter new password: ")
         if validate_password(new_password):
-            # Update password if it is valid
+            # Validate password if it is valid
             index = user_mobile_numbers.index(username)
             # Get the index of the username (Mobile Number)
-            old_password = user_passwords[index]
-            # Check if the new password is the same as the old password
-            if old_password == new_password:
-                print("You cannot use the password used earlier.")
+            confirm_password = input("Please re-enter password: ")
+            if new_password != confirm_password:
+                print("Passwords do not match. Please try again.")
             else:
-                confirm_password = input("Please re-enter password: ")
-                if new_password != confirm_password:
-                    print("Passwords do not match. Please try again.")
-                else:
-                    # Update the password
-                    user_passwords[index] = new_password
-                    print("Password reset successfully.")
-                    break
+                # Update the password
+                user_passwords[index] = new_password
+                print("Password reset successfully.")
+                break
         else:
             print("Invalid password. Please enter a valid password.")
 
@@ -260,8 +279,6 @@ user_full_names = []
 user_passwords = []
 user_mobile_numbers = []
 user_dobs = []
-
-while True:
-    # Process user choice until the user quits the application
-    if not process():
-        break
+# Process user choice
+while process():
+    pass
