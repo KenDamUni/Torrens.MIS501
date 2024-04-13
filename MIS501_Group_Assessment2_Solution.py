@@ -1,10 +1,13 @@
 import re
 # Define application constants
 CURRENT_YEAR = 2021
+# Phone number must start with '0' and have 10 digits.
 MOBILE_NUMBER_PATTERN = r'^0\d{9}$'
+# Password must start with a letter and end with a digit. It must contain either '@' or '&' or '#'.
 PASSWORD_PATTERN = r'^[a-zA-Z].*[@&#].*\d$'
+# Date of birth must be in the format dd/mm/yyyy.
 DATE_FORMAT = r'^\d{2}/\d{2}/\d{4}$'
-MAX_VALUE_OF_LOGIN_ATTEMPTS = 3
+MAX_VALUE_OF_LOGIN_ATTEMPTS = 3  # Maximum number of login attempts
 
 ################### Task 2A ###################
 
@@ -59,48 +62,42 @@ def sign_up():
     '''
     Register a new user.
     '''
-    # Define steps for user registration
-    step = 1  # Initial step
-    while True:
-        if step == 1:  # Step 1: Enter full name
-            full_name = input("Please enter your name: ")
-            if len(full_name) < 3:
-                print("Name must be at least 3 characters long.")
-            else:
-                step += 1  # Move to next step
-        if step == 2:  # Step 2: Enter mobile number
-            user_mobile_number = input("Please enter your mobile number: ")
-            # Validate mobile number
-            if not validate_mobile_number(user_mobile_number):
-                print(f"You have enter the invalid mobile number"
-                      f"\nPlease start again:")
-                # Continue to the same step if mobile number is invalid
-            else:
-                step += 1  # Move to next step
-        if step == 3:  # Step 3: Enter password
-            password = input("Please enter your password: ")
-            if not validate_password(password):
-                print(f"You have enter the invalid password."
-                      f"\nPlease enter a valid password.")
-            else:
-                confirm_password = input("Please confirm your Password: ")
-                if password != confirm_password:
-                    print("Passwords do not match. Please start again.")
-                else:
-                    step += 1
-        if step == 4:  # Step 4: Enter date of birth
-            dob = input(
-                "Please enter your Date of Birth (DD/MM/YYYY) (No Space): ")
-            if not validate_dob(dob):
-                print(f"You have enter the Date of Birth in invalid format."
-                      f"\nPlease enter a valid date of birth.")
-            else:  # Register user if all information is valid
-                user_full_names.append(full_name.strip())
-                user_passwords.append(password)
-                user_mobile_numbers.append(user_mobile_number.strip())
-                user_dobs.append(dob.strip())
-                print("You have successfully Signed up.")
-                break
+    # Get user details
+    # Input full name
+    full_name = input("Please enter your name: ")
+    while len(full_name) < 3:
+        print("Name must be at least 3 characters long.")
+        full_name = input("Please enter your name: ")
+    # Input mobile number
+    user_mobile_number = input("Please enter your mobile number: ")
+    while not validate_mobile_number(user_mobile_number) or user_mobile_number in user_mobile_numbers:
+        print("You have enter the invalid mobile number or the mobile number already exists."
+              "\nPlease start again:")
+        user_mobile_number = input("Please enter your mobile number: ")
+
+    # Input password
+    password = input("Please enter your password: ")
+    while not validate_password(password):
+        print("You have enter the invalid password."
+              "\nPlease enter a valid password.")
+        password = input("Please enter your password: ")
+    # Confirm password
+    confirm_password = input("Please confirm your Password: ")
+    while password != confirm_password:
+        print("Passwords do not match. Please start again.")
+        confirm_password = input("Please confirm your Password: ")
+    # Input Date of Birth
+    dob = input("Please enter your Date of Birth (DD/MM/YYYY) (No Space): ")
+    while not validate_dob(dob):
+        print("You have enter the Date of Birth in invalid format."
+              "\nPlease enter a valid date of birth.")
+        dob = input("Please enter your Date of Birth (DD/MM/YYYY) (No Space): ")
+
+    user_full_names.append(full_name.strip())
+    user_passwords.append(password)
+    user_mobile_numbers.append(user_mobile_number.strip())
+    user_dobs.append(dob.strip())
+    print("You have successfully Signed up.")
 
 ################### Task 2B ###################
 
@@ -122,11 +119,9 @@ def get_user_details(username):
     if username in user_mobile_numbers:
         index = user_mobile_numbers.index(username)
         # Return user information in a tuple
-        user_info = (user_full_names[index], username)
+        return (user_full_names[index], username)
     else:
-        user_info = None
-
-    return user_info
+        return None
 
 
 def sign_in():
@@ -144,7 +139,7 @@ def sign_in():
             if is_valid_user:
                 (full_name, mobile_number) = get_user_details(username)
                 print(
-                    f"Welcome {full_name}!.\nYou have successfully Signed in!")
+                    f"Welcome {full_name}!\nYou have successfully Signed in!")
                 break
             else:
                 print("You have entered the wrong Password.\nPlease try again.")
