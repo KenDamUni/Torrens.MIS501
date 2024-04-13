@@ -1,3 +1,36 @@
+14/04/2024
+#Task 2C - Line 172 - Delete: print(f"Welcome {full_name}!") as duplication
+#Task 2C - function reset password no display detail for user input: 
+"Please enter your Username (Mobile number):
+Please enter your old password: "
+'''
+Please enter 1 for Resetting password.
+Please enter 2 for Sign out.1
+Sam@21
+Enter new password: Sam@44
+Please re-enter password: Sam@44
+Password reset successfully.
+Please enter 1 for Resetting password.
+Please enter 2 for Sign out.1
+'''
+#Task 2C - Line 204 - Amend wording: new_password = input("Please enter you new password: ")
+#Task 2C - Line 206 - Amend wording: confirm_password = input("Please re-enter your password: ")
+#Task 2C - Line 216 - Amend wording: print("Your Password has been reset successfully.")
+#Task 2C - Part 2 - no function of The user is not allowed to set a password, which he has used previously.
+
+
+
+
+
+
+
+
+
+
+
+
+
+######################################################################################################################
 #Program start - Line 230 - Amend wording: Please Enter 1 for Sign up/Please Enter 2 for Sign in/Please Enter 3 for Quit.
 #Program start - Line 236 - Add wording: Thank You for using the Application.
 #Task 2A - Line 66 - Amend wording: full_name = input("Please enter your name: ")
