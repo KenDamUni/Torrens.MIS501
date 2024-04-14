@@ -67,7 +67,7 @@ def sign_up():
     # Get user details
     # Input full name
     full_name = input("Please enter your name: ")
-    while len(full_name) < 3 and not re.match(FULL_NAME_PATTERN, full_name):
+    while len(full_name) < 3 or not re.match(FULL_NAME_PATTERN, full_name):
         print("Fullname must be at least 3 characters long and have only alphabets and spaces.")
         full_name = input("Please enter your name: ")
     # Input mobile number
