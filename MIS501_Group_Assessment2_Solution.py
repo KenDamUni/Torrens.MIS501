@@ -169,12 +169,11 @@ def process_signed_in_user(username):
     user_info = get_user_details(username)
     if user_info:
         full_name, username = user_info  # Unpack user information from the tuple
-        print(f"Welcome {full_name}!")
         while True:
             user_choice = input(f"Please enter {RESETTING_PASSWORD} for Resetting password."
                                 f"\nPlease enter {SIGN_OUT} for Sign out.")
             if user_choice.strip() == RESETTING_PASSWORD:
-                current_pwd = input()
+                current_pwd = input('Please enter your old password:')
                 if verify_user(username, current_pwd):
                     reset_password_from_menu(username)
                 else:
@@ -201,9 +200,9 @@ def reset_password_by_unsuccessful_login():
             dob_for_confirming = input(
                 "Please enter your Date of Birth in DD/MM/YYYY format to confirm: ")
             if dob_for_confirming.strip() == user_dobs[index]:
-                new_password = input("Please enter new password: ")
+                new_password = input("Please enter your new password: ")
                 if validate_password(new_password):
-                    confirm_password = input("Please re-enter password: ")
+                    confirm_password = input("Please re-enter your password: ")
                     if new_password != confirm_password:
                         print("Passwords do not match. Please try again.")
                     else:
@@ -213,7 +212,7 @@ def reset_password_by_unsuccessful_login():
                         else:
                             # Update the password
                             user_passwords[index] = new_password
-                            print("Password reset successfully.")
+                            print("Your Password have been reset successfully.")
                             break
                 else:
                     print("Invalid password. Please enter a valid password.")
@@ -239,7 +238,7 @@ def reset_password_from_menu(username):
             else:
                 # Update the password
                 user_passwords[index] = new_password
-                print("Password reset successfully.")
+                print("Your Password have been reset successfully.")
                 break
         else:
             print("Invalid password. Please enter a valid password.")
