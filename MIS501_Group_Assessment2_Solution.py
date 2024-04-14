@@ -1,6 +1,8 @@
 import re
 # Define application constants
 CURRENT_YEAR = 2021
+# full name must contain only alphabets and spaces.
+FULL_NAME_PATTERN = r'^[A-Za-z\s]+$'
 # Phone number must start with '0' and have 10 digits.
 MOBILE_NUMBER_PATTERN = r'^0\d{9}$'
 # Password must start with a letter and end with a digit. It must contain either '@' or '&' or '#'.
@@ -65,8 +67,8 @@ def sign_up():
     # Get user details
     # Input full name
     full_name = input("Please enter your name: ")
-    while len(full_name) < 3:
-        print("Name must be at least 3 characters long.")
+    while len(full_name) < 3 and not re.match(FULL_NAME_PATTERN, full_name):
+        print("Fullname must be at least 3 characters long and have only alphabets and spaces.")
         full_name = input("Please enter your name: ")
     # Input mobile number
     user_mobile_number = input("Please enter your mobile number: ")
