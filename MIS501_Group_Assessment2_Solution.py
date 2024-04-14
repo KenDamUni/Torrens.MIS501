@@ -173,11 +173,16 @@ def process_signed_in_user(username):
             user_choice = input(f"Please enter {RESETTING_PASSWORD} for Resetting password."
                                 f"\nPlease enter {SIGN_OUT} for Sign out.")
             if user_choice.strip() == RESETTING_PASSWORD:
+                confirm_username = input(
+                    "Please enter your Username (Mobile Number): ")
                 current_pwd = input('Please enter your old password:')
-                if verify_user(username, current_pwd):
-                    reset_password_from_menu(username)
+                if (confirm_username != username):
+                    print("You have entered wrong username.")
                 else:
-                    print("You have entered wrong password.")
+                    if verify_user(username, current_pwd):
+                        reset_password_from_menu(username)
+                    else:
+                        print("You have entered wrong password.")
             elif user_choice.strip() == SIGN_OUT:
                 print("You have successfully signed out.")
                 break
