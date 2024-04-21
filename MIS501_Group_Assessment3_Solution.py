@@ -204,7 +204,7 @@ class Ordering:
         while True:
             ordering_choice = input(f"Please Enter {DINE_IN} for Dine in."
                                     "\nPlease Enter {ORDER_ONLINE} for Order Online."
-                                    "\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.").strip()
+                                    "\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
             if ordering_choice == DINE_IN:
                 self.order = DineInOrder(self.user)
             elif ordering_choice == ORDER_ONLINE:
@@ -222,7 +222,7 @@ class Ordering:
         while True:
             ordering_choice = input(f"Please Enter {SELF_PICKUP} for Self Pickup."
                                     "\nPlease Enter {HOME_DELIVERY} for Home Delivery."
-                                    "\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.").strip()
+                                    "\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
             if ordering_choice == SELF_PICKUP:
                 self.order = SelfPickupOrder(self.user)
             elif ordering_choice == HOME_DELIVERY:
@@ -270,7 +270,8 @@ class Restaurant:
             # Display the main menu to the user ( Login page)
             user_choice = input(f"Please Enter {SIGN_UP}  for Sign up."
                                 "\nPlease Enter {SIGN_IN} for Sign in."
-                                "\nPlease Enter {QUIT} for Quit").strip()
+                                "\nPlease Enter {QUIT} for Quit."
+                                "\n ---> ").strip()
 
             if user_choice == SIGN_UP:
                 self.sign_up()
@@ -322,7 +323,7 @@ class Restaurant:
         while True:
             user_choice = input(f"Please Enter {START_ORDERING} to Start ordering."
                                 "\nPlease Enter {PRINT_STATISTICS} to Print statistics."
-                                "\nPlease Enter {LOG_OUT} to Log out.").strip()
+                                "\nPlease Enter {LOG_OUT} to Log out. --> ").strip()
             if user_choice == START_ORDERING:
                 ordering = Ordering(user)
                 order = ordering.start_ordering()
