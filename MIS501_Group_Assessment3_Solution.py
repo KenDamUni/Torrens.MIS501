@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import re
 ####### User Component #######
 
@@ -57,7 +57,7 @@ class User:
         input_message = "Please enter your Date of Birth # DD/MM/YYYY (No Space): "
         dob = input(input_message)
 
-        while self._validate_dob(dob):
+        while not self._validate_dob(dob):
             print("Invalid Date of Birth. Please enter a valid Date of Birth.")
             dob = input(input_message)
 
@@ -76,14 +76,14 @@ class User:
         if not re.match(DATE_FORMAT, dob):
             return False
         # Split the date of birth into day, month, and year
-        day, month, year = dob.split("/")
+        day, month, year = map(int, dob.split("/"))
         # Validate the input date
         try:
-            datetime(int(year), int(month), int(day))
+            datetime(year, month, day)
         except ValueError:
             return False
         # Validate the year of birth to ensure the user is at least 21 years old
-        if int(year) < 1900 or int(year) > datetime.now().year or datetime.now().year - int(year) < 21:
+        if year < 1900 or year > datetime.now().year or datetime.now().year - year < 21:
             return False
         return True
 
