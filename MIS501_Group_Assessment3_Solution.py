@@ -95,9 +95,6 @@ class MenuItem:
         self.name = name
         self.price = price
 
-    def __str__(self):
-        return f"{self.name} - ${self.price}"
-
 
 class Menu:
     def __init__(self):
@@ -133,8 +130,10 @@ class Menu:
             food_choice = input(food_menu).strip()
             if food_choice.isdigit() and 0 < int(food_choice) <= len(self.food_items):
                 choice_index = int(food_choice) - 1
-                self.selected_items.append(self.food_items[choice_index])
-                print(f"You have selected {self.food_items[choice_index]}")
+                choice_item = self.food_items[choice_index]
+                self.selected_items.append(choice_item)
+                print(f"You have selected {choice_item.name} "
+                      "for ${choice_item.price}")
             elif food_choice == LAST_MENU_INDEX:
                 break
             else:
