@@ -146,15 +146,6 @@ class Menu:
 ####### Order Component #######
 
 
-class OrderItem:
-    def __init__(self, username, order_id, date, total_amount_paid, type_of_order):
-        self.username = username
-        self.order_id = order_id
-        self.date = date
-        self.total_amount_paid = total_amount_paid
-        self.type_of_order = type_of_order
-
-
 class Order:
     def __init__(self, user):
         self.user = user
@@ -221,8 +212,7 @@ class Ordering:
             elif ordering_choice == BACK_TO_PREVIOUS:
                 break
 
-        self.order.process_order()
-        return self.order.selected_items
+        return self.order
 
     def _ordering_online(self):
         # Define application constants
@@ -240,6 +230,27 @@ class Ordering:
             elif ordering_choice == BACK_TO_PREVIOUS:
                 break
 
+####### Payment Component #######
+
+
+class PaymentItem:
+    def __init__(self, username, order_id, date, total_amount_paid, type_of_order, details):
+        self.username = username
+        self.order_id = order_id
+        self.date = date
+        self.total_amount_paid = total_amount_paid
+        self.type_of_order = type_of_order
+        self.details = details
+
+
+class Payment:
+    def __init__(self, user, ordered_items):
+        self.user = user
+        self.ordered_items = ordered_items
+
+    def process_payment(self):
+        return PaymentItem("sample", 1, "2021-10-10", 100, "Dine In", self.ordered_items)
+
 ####### Restaurant Component #######
 
 
@@ -247,8 +258,7 @@ class Restaurant:
 
     def __init__(self):
         self.users = []
-        self.orders = []
-        self.menu = Menu()
+        self.paid_orders = []
 
     def open(self):
 
@@ -315,7 +325,11 @@ class Restaurant:
                                 "\nPlease Enter {LOG_OUT} to Log out.").strip()
             if user_choice == START_ORDERING:
                 ordering = Ordering(user)
-                ordering.start_ordering()
+                order = ordering.start_ordering()
+                selected_items = order.get_selected_items()
+                payment = Payment(user, selected_items)
+                paid_item = payment.process_payment()
+                self.paid_orders.append(paid_item)
             elif user_choice == PRINT_STATISTICS:
                 pass
             elif user_choice == LOG_OUT:
@@ -323,6 +337,7 @@ class Restaurant:
                 # Go to the main menu - Login page
             else:
                 print("Invalid choice. Please enter a valid choice.")
+
 
 ####### Main #######
 
