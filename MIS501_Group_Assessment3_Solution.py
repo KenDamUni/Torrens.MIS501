@@ -1,3 +1,4 @@
+import datetime
 import re
 ####### User Component #######
 
@@ -17,15 +18,14 @@ class User:
         Request user information from the user and validate it.
         '''
         # Define application constants
-        CURRENT_YEAR = 2021
+
         # full name must contain only alphabets and spaces.
         FULL_NAME_PATTERN = r'^[A-Za-z\s]+$'
         # Phone number must start with '0' and have 10 digits.
         MOBILE_NUMBER_PATTERN = r'^0\d{9}$'
         # Password must start with a letter and end with a digit. It must contain either '@' or '&' or '#'.
         PASSWORD_PATTERN = r'^[a-zA-Z].*[@&#].*\d$'
-        # Date of birth must be in the format dd/mm/yyyy.
-        DATE_FORMAT = r'^\d{2}/\d{2}/\d{4}$'
+
         # Address must contain only alphabets, digits, spaces, and commas.
         ADDRESS_PATTERN = r'^[A-Za-z0-9\s,]+$'
 
@@ -56,16 +56,36 @@ class User:
 
         dob = input("Please enter your Date of Birth # DD/MM/YYYY (No Space): ")
 
-        while not re.match(DATE_FORMAT, dob):
+        while self._validate_dob(dob):
             print("Invalid Date of Birth. Please enter a valid Date of Birth.")
-            dob = input(f"Please enter your Date of Birth"
-                        " # DD/MM/YYYY (No Space): ")
+            dob = input(
+                "Please enter your Date of Birth # DD/MM/YYYY (No Space): ")
 
         self.full_name = full_name
         self.mobile_number = mobile_number
         self.password = password
         self.dob = dob
         self.address = address
+
+    def _validate_dob(self, dob):
+        '''
+        Validate the date of birth.
+        '''
+        # Date of birth must be in the format dd/mm/yyyy.
+        DATE_FORMAT = r'^\d{2}/\d{2}/\d{4}$'
+        if not re.match(DATE_FORMAT, dob):
+            return False
+        # Split the date of birth into day, month, and year
+        day, month, year = dob.split("/")
+        # Validate the input date
+        try:
+            datetime(int(year), int(month), int(day))
+        except ValueError:
+            return False
+        # Validate the year of birth to ensure the user is at least 21 years old
+        if int(year) < 1900 or int(year) > datetime.now().year or datetime.now().year - int(year) < 21:
+            return False
+        return True
 
 ####### Menu Component #######
 
