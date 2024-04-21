@@ -54,12 +54,12 @@ class User:
             print("Password does not match. Please re-enter your password.")
             confirm_password = input("Please re-enter your password: ")
 
-        dob = input("Please enter your Date of Birth # DD/MM/YYYY (No Space): ")
+        input_message = "Please enter your Date of Birth # DD/MM/YYYY (No Space): "
+        dob = input(input_message)
 
         while self._validate_dob(dob):
             print("Invalid Date of Birth. Please enter a valid Date of Birth.")
-            dob = input(
-                "Please enter your Date of Birth # DD/MM/YYYY (No Space): ")
+            dob = input(input_message)
 
         self.full_name = full_name
         self.mobile_number = mobile_number
