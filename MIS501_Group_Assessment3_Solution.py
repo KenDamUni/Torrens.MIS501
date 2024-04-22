@@ -318,7 +318,7 @@ class Restaurant:
         password = input("Please enter your Password: ")
         login_user = self._verify_user(user_name, password)
         if login_user is not None:
-            self._show_home_page()
+            self._show_home_page(login_user)
 
     def _verify_user(self, user_name, password):
         '''
