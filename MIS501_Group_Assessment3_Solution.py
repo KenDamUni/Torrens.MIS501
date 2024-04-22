@@ -315,9 +315,22 @@ class Payment:
         '''
         Process the payment.
         '''
-        total_amount = self._calculate_total()
+        order_amount = self._calculate_order_amount()
+        total_amount = self.calculate_total_with_service_charge(order_amount)
         order_id = self._create_order_id()
         self.proceeding_order(order_id, total_amount)
+
+    def calculate_total_with_service_charge(self, order_amount):
+        '''
+        Calculate the service charge.
+        '''
+        pass
+
+    def proceeding_order(self, order_id, total_amount):
+        '''
+        Proceed the order.
+        '''
+        pass
 
     def _create_order_id(self):
         '''
@@ -326,20 +339,14 @@ class Payment:
         id = random.randint(1, 999)
         return f"B{id:03}"
 
-    def _calculate_total(self):
+    def _calculate_order_amount(self):
         '''
         Calculate the total amount of the order.
         '''
-        total = 0
+        order_amount = 0
         for item in self.ordered_items:
-            total += item.price
-        return total
-
-    def proceeding_order(self, order_id, total_amount):
-        '''
-        Proceed the order.
-        '''
-        pass
+            order_amount += item.price
+        return order_amount
 
     def validate_date(self, date):
         '''
@@ -375,6 +382,13 @@ class DineInPayment(Payment):
     def __init__(self, user, ordered_items):
         super().__init__(user, ordered_items)
 
+    def calculate_total_with_service_charge(self, order_amount):
+        SERVICE_CHARGE = 0.15  # 15% service charge
+        total_amount = order_amount + order_amount * SERVICE_CHARGE
+        print(f"Your total payable amount is: {total_amount} AUD"
+              f"including AUD {order_amount * SERVICE_CHARGE} for service charge.")
+        return total_amount
+
     def proceeding_order(self, order_id, total_amount):
         pass
 
@@ -383,6 +397,11 @@ class PickupPayment(Payment):
     def __init__(self, user, ordered_items):
         super().__init__(user, ordered_items)
 
+    def calculate_total_with_service_charge(self, order_amount):
+        total_amount = order_amount
+        print(f"Your total payable amount is: {
+              total_amount} AUD without any service charge.")
+
     def proceeding_order(self):
         pass
 
@@ -390,6 +409,9 @@ class PickupPayment(Payment):
 class DeliveryPayment(Payment):
     def __init__(self, user, ordered_items):
         super().__init__(user, ordered_items)
+
+    def calculate_total_with_service_charge(self, order_amount):
+        pass
 
     def proceeding_order(self):
         pass
