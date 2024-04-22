@@ -213,7 +213,7 @@ class DeliveryOrder(OnlineOrder):
 class Ordering:
     def __init__(self, user):
         self.user = user
-        self.order = Order()
+        self.order = Order(user)
 
     def start_ordering(self):
         # Define application constants
