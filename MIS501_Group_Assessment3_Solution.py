@@ -399,8 +399,8 @@ class PickupPayment(Payment):
 
     def calculate_total_with_service_charge(self, order_amount):
         total_amount = order_amount
-        print(f"Your total payable amount is: {
-              total_amount} AUD without any service charge.")
+        print(f"Your total payable amount is: {total_amount}"
+              "AUD without any service charge.")
 
     def proceeding_order(self):
         pass
@@ -411,7 +411,9 @@ class DeliveryPayment(Payment):
         super().__init__(user, ordered_items)
 
     def calculate_total_with_service_charge(self, order_amount):
-        pass
+        # Define application constants
+
+        service_msg = " A fix charges for delivery based on the distance."
 
     def proceeding_order(self):
         pass
