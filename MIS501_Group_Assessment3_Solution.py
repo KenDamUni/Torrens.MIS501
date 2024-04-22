@@ -133,7 +133,7 @@ class Menu:
                 choice_item = self.food_items[choice_index]
                 self.selected_items.append(choice_item)
                 print(f"You have selected {choice_item.name} "
-                      "for ${choice_item.price}")
+                      f"for ${choice_item.price}")
             elif food_choice == LAST_MENU_INDEX:
                 break
             else:
@@ -221,9 +221,10 @@ class Ordering:
         ORDER_ONLINE = "2"
         BACK_TO_PREVIOUS = "3"
         while True:
-            ordering_choice = input(f"Please Enter {DINE_IN} for Dine in."
-                                    "\nPlease Enter {ORDER_ONLINE} for Order Online."
-                                    "\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
+            ordering_choice = input(
+                f"Please Enter {DINE_IN} for Dine in."
+                f"\nPlease Enter {ORDER_ONLINE} for Order Online."
+                f"\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
             if ordering_choice == DINE_IN:
                 self.order = DineInOrder(self.user)
             elif ordering_choice == ORDER_ONLINE:
@@ -239,14 +240,15 @@ class Ordering:
         HOME_DELIVERY = "2"
         BACK_TO_PREVIOUS = "3"
         while True:
-            ordering_choice = input(f"Please Enter {SELF_PICKUP} for Self Pickup."
-                                    "\nPlease Enter {HOME_DELIVERY} for Home Delivery."
-                                    "\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
-            if ordering_choice == SELF_PICKUP:
+            ordering_ol_choice = input(
+                f"Please Enter {SELF_PICKUP} for Self Pickup."
+                f"\nPlease Enter {HOME_DELIVERY} for Home Delivery."
+                f"\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
+            if ordering_ol_choice == SELF_PICKUP:
                 self.order = SelfPickupOrder(self.user)
-            elif ordering_choice == HOME_DELIVERY:
+            elif ordering_ol_choice == HOME_DELIVERY:
                 self.order = DeliveryOrder(self.user)
-            elif ordering_choice == BACK_TO_PREVIOUS:
+            elif ordering_ol_choice == BACK_TO_PREVIOUS:
                 break
 
 ####### Payment Component #######
@@ -288,8 +290,8 @@ class Restaurant:
         while True:
             # Display the main menu to the user ( Login page)
             user_choice = input(f"Please Enter {SIGN_UP}  for Sign up."
-                                "\nPlease Enter {SIGN_IN} for Sign in."
-                                "\nPlease Enter {QUIT} for Quit."
+                                f"\nPlease Enter {SIGN_IN} for Sign in."
+                                f"\nPlease Enter {QUIT} for Quit."
                                 "\n ---> ").strip()
 
             if user_choice == SIGN_UP:
@@ -341,8 +343,9 @@ class Restaurant:
         LOG_OUT = "2.3"
         while True:
             user_choice = input(f"Please Enter {START_ORDERING} to Start ordering."
-                                "\nPlease Enter {PRINT_STATISTICS} to Print statistics."
-                                "\nPlease Enter {LOG_OUT} to Log out. --> ").strip()
+                                f"\nPlease Enter {
+                                    PRINT_STATISTICS} to Print statistics."
+                                f"\nPlease Enter {LOG_OUT} to Log out. --> ").strip()
             if user_choice == START_ORDERING:
                 ordering = Ordering(user)
                 order = ordering.start_ordering()
