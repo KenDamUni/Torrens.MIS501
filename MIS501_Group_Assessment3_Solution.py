@@ -160,7 +160,7 @@ class Menu:
     def _get_menu(self, items):
         menu = ""
         for index, item in enumerate(items):
-            menu += f"Enter {index + 1} for {item}\n"
+            menu += f"Enter {index + 1} for {item.name}\n"
         return menu
 ####### Order Component #######
 
