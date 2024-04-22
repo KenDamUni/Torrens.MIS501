@@ -342,10 +342,10 @@ class Restaurant:
         PRINT_STATISTICS = "2.2"
         LOG_OUT = "2.3"
         while True:
-            user_choice = input(f"Please Enter {START_ORDERING} to Start ordering."
-                                f"\nPlease Enter {
-                                    PRINT_STATISTICS} to Print statistics."
-                                f"\nPlease Enter {LOG_OUT} to Log out. --> ").strip()
+            user_choice = input(
+                f"Please Enter {START_ORDERING} to Start ordering."
+                f"\nPlease Enter {PRINT_STATISTICS} to Print statistics."
+                f"\nPlease Enter {LOG_OUT} to Log out. --> ").strip()
             if user_choice == START_ORDERING:
                 ordering = Ordering(user)
                 order = ordering.start_ordering()
