@@ -124,9 +124,9 @@ class Menu:
         Process the food menu.
         '''
         food_menu = self._get_menu(self.food_items)
+        LAST_MENU_INDEX = len(self.food_items) + 1
+        food_menu += last_food_menu  # Add last item to the food menu
         while True:
-            LAST_MENU_INDEX = str(len(self.food_items) + 1)
-            food_menu += last_food_menu  # Add check out item to the menu
             food_choice = input(food_menu).strip()
             if food_choice.isdigit() and 0 < int(food_choice) <= len(self.food_items):
                 choice_index = int(food_choice) - 1
@@ -142,16 +142,16 @@ class Menu:
 
     def _process_drink_menu(self):
         drink_menu = self._get_menu(self.drink_items)
+        CHECK_OUT = len(self.drink_items) + 1
+        check_out_item = f"Enter {CHECK_OUT} to Check out.\n"
+        drink_menu += check_out_item
         while True:
-            CHECK_OUT = str(len(self.drink_items) + 1)
-            check_out_item = f"Enter {CHECK_OUT} to Check out.\n"
-            drink_menu += check_out_item
             drink_choice = input(drink_menu).strip()
             if drink_choice.isdigit() and 0 < int(drink_choice) <= len(self.drink_items):
                 choice_index = int(drink_choice) - 1
-                self.selected_items.append(
-                    self.drink_items[choice_index])
-                print(f"You have selected {self.drink_items[choice_index]}")
+                choice_item = self.drink_items[choice_index]
+                self.selected_items.append(choice_item)
+                print(f"You have selected {choice_item.name}")
             elif drink_choice == CHECK_OUT:
                 break
             else:
@@ -160,7 +160,8 @@ class Menu:
     def _get_menu(self, items):
         menu = ""
         for index, item in enumerate(items):
-            menu += f"Enter {index + 1} for {item.name}\n"
+            menu += f"Enter {index + 1} "
+            f"for {item.name} Price AUD {item.price}\n"
         return menu
 ####### Order Component #######
 
