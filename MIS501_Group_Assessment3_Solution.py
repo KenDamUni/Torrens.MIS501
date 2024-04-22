@@ -271,20 +271,45 @@ class Ordering:
 
 
 class PaymentItem:
-    def __init__(self, username, order_id, date, total_amount_paid, type_of_order, details):
-        self.username = username
-        self.order_id = order_id
-        self.date = date
-        self.total_amount_paid = total_amount_paid
-        self.type_of_order = type_of_order
-        self.details = details
+    def __init__(self):
+        self.username = ""
+        self.order_id = ""
+        self.created_date = datetime.now()
+        self.total_amount_paid = 0
+
+
+class DineInPaymentItem(PaymentItem):
+    def __init__(self):
+        super().__init__()
+        self.type_of_order = "Dine In"
+        self.Number_of_Persons = 0
+        self.date_of_visit = ""
+        self.time_of_visit = ""
+
+
+class PickupPaymentItem(PaymentItem):
+    def __init__(self):
+        super().__init__()
+        self.type_of_order = "Pickup"
+        self.pickup_time = ""
+        self.pickup_date = ""
+        self.pickup_person = ""
+
+
+class DeliveryPaymentItem(PaymentItem):
+    def __init__(self):
+        super().__init__()
+        self.type_of_order = "Delivery"
+        self.delivery_address = ""
+        self.delivery_date = ""
+        self.delivery_distance = ""
 
 
 class Payment:
     def __init__(self, user, ordered_items):
         self.user = user
         self.ordered_items = ordered_items
-        self.payment_item = None
+        self.payment_item = PaymentItem()
 
     def process_payment(self):
         '''
@@ -351,10 +376,7 @@ class DineInPayment(Payment):
         super().__init__(user, ordered_items)
 
     def proceeding_order(self, order_id, total_amount):
-
-        self.payment_item = PaymentItem(self.user.full_name, 1, , self.total_amount, "Dine In", self.ordered_items)
-        print(f"Payment has been successfully processed for {
-              self.user.full_name} for {self.total_amount} AUD.")
+        pass
 
 
 class PickupPayment(Payment):
@@ -362,11 +384,15 @@ class PickupPayment(Payment):
         super().__init__(user, ordered_items)
 
     def proceeding_order(self):
-        self.payment_item = PaymentItem(self.user.full_name, 1, datetime.now(
-        ), self.total_amount, "Pickup", self.ordered_items)
-        print(f"Payment has been successfully processed for {
-              self.user.full_name} for {self.total_amount} AUD.")
+        pass
 
+
+class DeliveryPayment(Payment):
+    def __init__(self, user, ordered_items):
+        super().__init__(user, ordered_items)
+
+    def proceeding_order(self):
+        pass
 ####### Restaurant Component #######
 
 
@@ -465,7 +491,7 @@ class Restaurant:
             payment_choice = input(f"Please Enter {PAYMENT} to proceed to Checkout or"
                                    f"\nEnter {CANCEL} to cancel Order.\n---> ").strip()
             if payment_choice == PAYMENT:
-                self._make_payment(self.type_of_order, self.ordered_items)
+                self._make_payment(user, order)
                 break
             elif payment_choice == CANCEL:
                 break
@@ -476,19 +502,28 @@ class Restaurant:
         '''
         Make the payment.
         '''
-
-    def _update_address(self, user):
-        '''
-        Update the address.
-        '''
-        if user.address == "":
-            message = "You have not mentioned your address while signing up." + \
-                "\n Please Enter Y if would like to enter your address." + \
-                "\n Enter N if you would like to select other mode of order."
-            address_choice = input(message).strip()
-            if address_choice.capitalize == "Y":
-                address = input("Please enter your address: ").strip()
-                user.address = address
+        if isinstance(order, DineInOrder):
+            payment = DineInPayment(user, order.get_selected_items())
+        elif isinstance(order, PickupPayment):
+            payment = PickupPayment(user, order.get_selected_items())
+        elif isinstance(order, DeliveryOrder):
+            if user.address == "":
+                message = "You have not mentioned your address while signing up." + \
+                    "\n Please Enter Y if would like to enter your address." + \
+                    "\n Enter N if you would like to select other mode of order."
+                print(message)
+                while True:
+                    address_choice = input("---->").strip()
+                    if address_choice.capitalize == "Y":
+                        address = input("Please enter your address: ").strip()
+                        user.address = address
+                        break
+                    elif address_choice.capitalize == "N":
+                        break
+                    else:
+                        print("Invalid choice. Please enter a valid choice.")
+            if user.address != "":
+                payment = DeliveryPayment(user, order.get_selected_items())
 
 
 ####### Main #######
