@@ -108,15 +108,15 @@ class Menu:
         '''
         Show the food menu.
         '''
-        CHECK_OUT = str(len(self.food_items) + 1)
-        self._process_food_menu(f"Enter {CHECK_OUT} to Check out.\n")
+        self._process_food_menu(
+            f"Enter {len(self.food_items) + 1} to Check out.\n")
 
     def process_food_drink_menu(self):
         '''
         Show the food and drink menu.
         '''
-        LAST_MENU_INDEX = str(len(self.food_items) + 1)
-        self._process_food_menu(f"Enter {LAST_MENU_INDEX} for Drinks Menu.\n")
+        self._process_food_menu(
+            f"Enter {len(self.food_items) + 1} for Drinks Menu.\n")
         self._process_drink_menu()
 
     def _process_food_menu(self, last_food_menu):
@@ -126,16 +126,19 @@ class Menu:
         food_menu = self._get_menu(self.food_items)
         LAST_MENU_INDEX = len(self.food_items) + 1
         food_menu += last_food_menu  # Add last item to the food menu
+        print(food_menu)
         while True:
-            food_choice = input(food_menu).strip()
-            if food_choice.isdigit() and 0 < int(food_choice) <= len(self.food_items):
+            food_choice = input("---> ").strip()
+            if food_choice.isdigit():
                 choice_index = int(food_choice) - 1
-                choice_item = self.food_items[choice_index]
-                self.selected_items.append(choice_item)
-                print(f"You have selected {choice_item.name} "
-                      f"for ${choice_item.price}")
-            elif food_choice == LAST_MENU_INDEX:
-                break
+                if 0 <= choice_index < len(self.food_items):
+                    choice_item = self.food_items[choice_index]
+                    self.selected_items.append(choice_item)
+                    print(f"You have selected {choice_item.name} ")
+                elif int(food_choice) == LAST_MENU_INDEX:
+                    break
+                else:
+                    print("Invalid choice. Please enter a valid choice.")
             else:
                 print("Invalid choice. Please enter a valid choice.")
         return
@@ -145,23 +148,27 @@ class Menu:
         CHECK_OUT = len(self.drink_items) + 1
         check_out_item = f"Enter {CHECK_OUT} to Check out.\n"
         drink_menu += check_out_item
+        print(drink_menu)
         while True:
-            drink_choice = input(drink_menu).strip()
-            if drink_choice.isdigit() and 0 < int(drink_choice) <= len(self.drink_items):
+            drink_choice = input("----> ").strip()
+            if drink_choice.isdigit():
                 choice_index = int(drink_choice) - 1
-                choice_item = self.drink_items[choice_index]
-                self.selected_items.append(choice_item)
-                print(f"You have selected {choice_item.name}")
-            elif drink_choice == CHECK_OUT:
-                break
+                if 0 <= choice_index < len(self.drink_items):
+                    choice_item = self.drink_items[choice_index]
+                    self.selected_items.append(choice_item)
+                    print(f"You have selected {choice_item.name}")
+                elif int(drink_choice) == CHECK_OUT:
+                    break
+                else:
+                    print("Invalid choice. Please enter a valid choice.")
             else:
                 print("Invalid choice. Please enter a valid choice.")
 
     def _get_menu(self, items):
         menu = ""
         for index, item in enumerate(items):
-            menu += f"Enter {index + 1} "
-            f"for {item.name} Price AUD {item.price}\n"
+            menu += f"Enter {index + 1}" + \
+                f" for {item.name.ljust(10)} Price AUD {item.price}\n"
         return menu
 ####### Order Component #######
 
