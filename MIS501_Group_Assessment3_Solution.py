@@ -1,5 +1,6 @@
 from datetime import datetime
 import re
+import random
 ####### User Component #######
 
 
@@ -109,7 +110,7 @@ class Menu:
         Show the food menu.
         '''
         self._process_food_menu(
-            f"Enter {len(self.food_items) + 1} to Check out.\n")
+            f"Enter {len(self.food_items) + 1} to Check out.\n", is_check_out=True)
 
     def process_food_drink_menu(self):
         '''
@@ -119,7 +120,7 @@ class Menu:
             f"Enter {len(self.food_items) + 1} for Drinks Menu.\n")
         self._process_drink_menu()
 
-    def _process_food_menu(self, last_food_menu):
+    def _process_food_menu(self, last_food_menu, is_check_out=False):
         '''
         Process the food menu.
         '''
@@ -136,7 +137,10 @@ class Menu:
                     self.selected_items.append(choice_item)
                     print(f"You have selected {choice_item.name} ")
                 elif int(food_choice) == LAST_MENU_INDEX:
-                    break
+                    if is_check_out and len(self.selected_items) == 0:
+                        print("No items selected. Please select items to proceed.")
+                    else:
+                        break
                 else:
                     print("Invalid choice. Please enter a valid choice.")
             else:
@@ -280,9 +284,88 @@ class Payment:
     def __init__(self, user, ordered_items):
         self.user = user
         self.ordered_items = ordered_items
+        self.payment_item = None
 
     def process_payment(self):
-        return PaymentItem("sample", 1, "2021-10-10", 100, "Dine In", self.ordered_items)
+        '''
+        Process the payment.
+        '''
+        total_amount = self._calculate_total()
+        order_id = self._create_order_id()
+        self.proceeding_order(order_id, total_amount)
+
+    def _create_order_id(self):
+        '''
+        Create the order ID.
+        '''
+        id = random.randint(1, 999)
+        return f"B{id:03}"
+
+    def _calculate_total(self):
+        '''
+        Calculate the total amount of the order.
+        '''
+        total = 0
+        for item in self.ordered_items:
+            total += item.price
+        return total
+
+    def proceeding_order(self, order_id, total_amount):
+        '''
+        Proceed the order.
+        '''
+        pass
+
+    def validate_date(self, date):
+        '''
+        Validate the date.
+        '''
+        DATE_FORMAT = r'^\d{2}/\d{2}/\d{4}$'
+        if not re.match(DATE_FORMAT, date):
+            return False
+        day, month, year = map(int, date.split("/"))
+        try:
+            input_date = datetime(year, month, day)
+            if input_date < datetime.now():
+                return False
+
+        except ValueError:
+            return False
+        return True
+
+    def validate_time(self, time):
+        '''
+        Validate the time.
+        '''
+        TIME_FORMAT = r'^\d{2}:\d{2}$'
+        if not re.match(TIME_FORMAT, time):
+            return False
+        hour, minute = map(int, time.split(":"))
+        if hour < 0 or hour > 23 or minute < 0 or minute > 59:
+            return False
+        return True
+
+
+class DineInPayment(Payment):
+    def __init__(self, user, ordered_items):
+        super().__init__(user, ordered_items)
+
+    def proceeding_order(self, order_id, total_amount):
+
+        self.payment_item = PaymentItem(self.user.full_name, 1, , self.total_amount, "Dine In", self.ordered_items)
+        print(f"Payment has been successfully processed for {
+              self.user.full_name} for {self.total_amount} AUD.")
+
+
+class PickupPayment(Payment):
+    def __init__(self, user, ordered_items):
+        super().__init__(user, ordered_items)
+
+    def proceeding_order(self):
+        self.payment_item = PaymentItem(self.user.full_name, 1, datetime.now(
+        ), self.total_amount, "Pickup", self.ordered_items)
+        print(f"Payment has been successfully processed for {
+              self.user.full_name} for {self.total_amount} AUD.")
 
 ####### Restaurant Component #######
 
@@ -361,10 +444,8 @@ class Restaurant:
             if user_choice == START_ORDERING:
                 ordering = Ordering(user)
                 order = ordering.start_ordering()
-                selected_items = order.get_selected_items()
-                payment = Payment(user, selected_items)
-                paid_item = payment.process_payment()
-                self.paid_orders.append(paid_item)
+                if order is not None:
+                    self._process_payment(user, order)
             elif user_choice == PRINT_STATISTICS:
                 pass
             elif user_choice == LOG_OUT:
@@ -372,6 +453,42 @@ class Restaurant:
                 # Go to the main menu - Login page
             else:
                 print("Invalid choice. Please enter a valid choice.")
+
+    def _process_payment(self, user, order):
+        '''
+        Process the payment.
+        '''
+        # Define application constants
+        PAYMENT = "Y"
+        CANCEL = "N"
+        while True:
+            payment_choice = input(f"Please Enter {PAYMENT} to proceed to Checkout or"
+                                   f"\nEnter {CANCEL} to cancel Order.\n---> ").strip()
+            if payment_choice == PAYMENT:
+                self._make_payment(self.type_of_order, self.ordered_items)
+                break
+            elif payment_choice == CANCEL:
+                break
+            else:
+                print("Invalid choice. Please enter a valid choice.")
+
+    def _make_payment(self, user, order):
+        '''
+        Make the payment.
+        '''
+
+    def _update_address(self, user):
+        '''
+        Update the address.
+        '''
+        if user.address == "":
+            message = "You have not mentioned your address while signing up." + \
+                "\n Please Enter Y if would like to enter your address." + \
+                "\n Enter N if you would like to select other mode of order."
+            address_choice = input(message).strip()
+            if address_choice.capitalize == "Y":
+                address = input("Please enter your address: ").strip()
+                user.address = address
 
 
 ####### Main #######
