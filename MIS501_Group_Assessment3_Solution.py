@@ -184,7 +184,7 @@ class DineInOrder(Order):
         super().__init__(user)
 
     def process_order(self):
-        super().menu.process_food_drink_menu()
+        self.menu.process_food_drink_menu()
 
 
 class OnlineOrder(Order):
@@ -192,7 +192,7 @@ class OnlineOrder(Order):
         super().__init__(user)
 
     def process_order(self):
-        super().menu.process_food_menu()
+        self.menu.process_food_menu()
 
 
 class SelfPickupOrder(OnlineOrder):
@@ -201,7 +201,7 @@ class SelfPickupOrder(OnlineOrder):
         self.pickup_time = ""
 
     def process_order(self):
-        super().menu.process_food_menu()
+        self.menu.process_food_menu()
 
 
 class DeliveryOrder(OnlineOrder):
@@ -227,8 +227,10 @@ class Ordering:
                 f"\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
             if ordering_choice == DINE_IN:
                 self.order = DineInOrder(self.user)
+                break
             elif ordering_choice == ORDER_ONLINE:
                 self._ordering_online()
+                break
             elif ordering_choice == BACK_TO_PREVIOUS:
                 break
 
@@ -246,8 +248,10 @@ class Ordering:
                 f"\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
             if ordering_ol_choice == SELF_PICKUP:
                 self.order = SelfPickupOrder(self.user)
+                break
             elif ordering_ol_choice == HOME_DELIVERY:
                 self.order = DeliveryOrder(self.user)
+                break
             elif ordering_ol_choice == BACK_TO_PREVIOUS:
                 break
 
