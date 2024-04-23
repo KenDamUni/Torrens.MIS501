@@ -282,7 +282,7 @@ class DineInPaymentItem(PaymentItem):
     def __init__(self):
         super().__init__()
         self.type_of_order = "Dine In"
-        self.Number_of_Persons = 0
+        self.number_of_persons = 0
         self.date_of_visit = ""
         self.time_of_visit = ""
 
@@ -390,7 +390,37 @@ class DineInPayment(Payment):
         return total_amount
 
     def proceeding_order(self, order_id, total_amount):
-        pass
+        dine_in_payment_item = DineInPaymentItem()
+        dine_in_payment_item.username = self.user.username
+        dine_in_payment_item.order_id = order_id
+        dine_in_payment_item.total_amount_paid = total_amount
+
+        dine_in_date_of_visit = input(
+            "Please enter the Date of Booking for Dine in: ")
+        while not self.validate_date(dine_in_date_of_visit):
+            print("Invalid date. Please enter a valid date.")
+            dine_in_date_of_visit = input(
+                "Please enter the Date of Booking for Dine in: ")
+        dine_in_payment_item.date_of_visit = dine_in_date_of_visit
+
+        dine_in_time_of_visit = input(
+            "Please enter the Time of Booking for Dine in: ")
+        while not self.validate_time(dine_in_time_of_visit):
+            print("Invalid time. Please enter a valid time.")
+            dine_in_payment_item.time_of_visit = input(
+                "Please enter the Time of Booking for Dine in: ")
+        dine_in_payment_item.time_of_visit = dine_in_time_of_visit
+
+        dine_in_number_of_person = input(
+            "Please enter the Number of Persons: ")
+        while not dine_in_number_of_person.isdigit():
+            print("Invalid number of persons. Please enter a valid number of persons.")
+            dine_in_number_of_person = input(
+                "Please enter the Number of Persons: ")
+        dine_in_payment_item.number_of_persons = dine_in_number_of_person
+
+        print("Thank You for entering the details, Your Booking is confirmed.")
+        return dine_in_payment_item
 
 
 class PickupPayment(Payment):
@@ -402,23 +432,107 @@ class PickupPayment(Payment):
         print(f"Your total payable amount is: {total_amount}"
               "AUD without any service charge.")
 
-    def proceeding_order(self):
-        pass
+    def proceeding_order(self, order_id, total_amount):
+        pickup_payment_item = PickupPaymentItem()
+        pickup_payment_item.username = self.user.username
+        pickup_payment_item.order_id = order_id
+        pickup_payment_item.total_amount_paid = total_amount
+
+        pickup_date = input("Please enter the Date of Pickup: ")
+        while not self.validate_date(pickup_date):
+            print("Invalid date. Please enter a valid date.")
+            pickup_date = input("Please enter the Date of Pickup: ")
+        pickup_payment_item.pickup_date = pickup_date
+
+        pickup_time = input("Please enter the Time of Pickup: ")
+        while not self.validate_time(pickup_time):
+            print("Invalid time. Please enter a valid time.")
+            pickup_time = input("Please enter the Time of Pickup: ")
+        pickup_payment_item.pickup_time = pickup_time
+
+        pickup_person = input("Please enter the Name of the Person: ")
+        while not re.match(r'^[A-Za-z\s]+$', pickup_person):
+            print("Invalid name. Please enter a valid name.")
+            pickup_person = input("Please enter the Name of the Person: ")
+        pickup_payment_item.pickup_person = pickup_person
+
+        print("Thank You for entering the details, Your Booking is confirmed.")
+        return pickup_payment_item
 
 
 class DeliveryPayment(Payment):
     def __init__(self, user, ordered_items):
         super().__init__(user, ordered_items)
+        self.distance = 0
 
     def calculate_total_with_service_charge(self, order_amount):
+        service_charge = 0
+        total_amount = order_amount + service_charge
+        print(f"Your total payable amount is: {total_amount} AUD"
+              " and there will be an additional charge for Delivery.")
+
+    def proceeding_order(self, order_id, total_amount):
+        delivery_payment_item = DeliveryPaymentItem()
+        delivery_payment_item.username = self.user.username
+        delivery_payment_item.order_id = order_id
+        delivery_payment_item.total_amount_paid = total_amount
+        delivery_payment_item.delivery_address = self.user.address
+
+        delivery_date = input("Please enter the Date of Delivery: ")
+        while not self.validate_date(delivery_date):
+            print("Invalid date. Please enter a valid date.")
+            delivery_date = input("Please enter the Date of Delivery: ")
+        delivery_payment_item.delivery_date = delivery_date
+
+        delivery_time = input("Please enter the Time of Delivery: ")
+        while not self.validate_time(delivery_time):
+            print("Invalid time. Please enter a valid time.")
+            delivery_time = input("Please enter the Time of Delivery: ")
+        delivery_payment_item.delivery_time = delivery_time
+
+        delivery_charge = self._calculate_delivery_charge()
+
+        # Delivery can not be done for more than 12 KM.
+        if delivery_charge == -1:
+            print("Delivery can not be done for more than 12 KM."
+                  "Please select Pick up order.")
+            return None
+        elif delivery_charge > 0:
+            delivery_payment_item.total_amount_paid += delivery_charge
+            print(f"Your total payable amount is: {delivery_payment_item.total_amount_paid} AUD"
+                  f" including AUD {delivery_charge} for delivery charge.")
+        return delivery_payment_item
+
+    def _calculate_delivery_charge(self):
+        '''
+        Calculate the delivery charge based on the distance.
+        '''
         # Define application constants
         FROM_0_TO_4_KM = 3
         FROM_4_TO_8_KM = 6
         FROM_8_TO_12_KM = 10
-        service_msg = " A fix charges for delivery based on the distance."
+        service_msg = " A fix charges for delivery based on the distance." + \
+            f"\nMore than 0 to 4 KM : ${FROM_0_TO_4_KM}" + \
+            f"\nMore than 4 to 8 KM : ${FROM_4_TO_8_KM}" + \
+            f"\nMore than 8 to 12 KM : ${FROM_8_TO_12_KM}" + \
+            "More than 12 KM : No delivery can be done."
+        print(service_msg)
+        distance = input("Please enter the distance from the Restaurant: ")
+        while not distance.isdigit():
+            print("Invalid distance. Please enter a valid distance.")
+            distance = input("Please enter the distance from the Restaurant: ")
+        self.distance = distance
+        if 0 < int(distance) <= 4:
+            return FROM_0_TO_4_KM
+        elif 4 < int(distance) <= 8:
+            return FROM_4_TO_8_KM
+        elif 8 < int(distance) <= 12:
+            return FROM_8_TO_12_KM
+        elif int(distance) > 12:
+            self.distance = 0
+            print("Delivery can not be done for more than 12 KM.")
+            return -1  # Return -1 if delivery can not be done.
 
-    def proceeding_order(self):
-        pass
 ####### Restaurant Component #######
 
 
