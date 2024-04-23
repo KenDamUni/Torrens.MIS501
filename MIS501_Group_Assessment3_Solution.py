@@ -234,7 +234,7 @@ class Ordering:
                 self.order = DineInOrder(self.user)
                 break
             elif ordering_choice == ORDER_ONLINE:
-                self._ordering_online()
+                self.order = self._ordering_online()
                 break
             elif ordering_choice == BACK_TO_PREVIOUS:
                 break
@@ -246,19 +246,21 @@ class Ordering:
         SELF_PICKUP = "1"
         HOME_DELIVERY = "2"
         BACK_TO_PREVIOUS = "3"
+        order = None
         while True:
             ordering_ol_choice = input(
                 f"Please Enter {SELF_PICKUP} for Self Pickup."
                 f"\nPlease Enter {HOME_DELIVERY} for Home Delivery."
                 f"\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
             if ordering_ol_choice == SELF_PICKUP:
-                self.order = SelfPickupOrder(self.user)
+                order = SelfPickupOrder(self.user)
                 break
             elif ordering_ol_choice == HOME_DELIVERY:
-                self.order = DeliveryOrder(self.user)
+                order = DeliveryOrder(self.user)
                 break
             elif ordering_ol_choice == BACK_TO_PREVIOUS:
                 break
+        return order
 
 ####### Payment Component #######
 
@@ -499,6 +501,7 @@ class DeliveryPayment(Payment):
             delivery_payment_item.total_amount_paid += delivery_charge
             print(f"Your total payable amount is: {delivery_payment_item.total_amount_paid} AUD"
                   f" including AUD {delivery_charge} for delivery charge.")
+            print("---- Thank You for your Order, Your Order has been confirmed.")
         return delivery_payment_item
 
     def _calculate_delivery_charge(self):
@@ -530,6 +533,42 @@ class DeliveryPayment(Payment):
             self.distance = 0
             print("Delivery can not be done for more than 12 KM.")
             return -1  # Return -1 if delivery can not be done.
+
+####### Statistics Component #######
+
+
+class Statistics:
+    def __init__(self, paid_orders):
+        self.paid_orders = paid_orders
+
+    def print_statistics(self):
+        while True:
+            # Define application constants
+            ALL_DINE_IN_ORDERS = 1
+            ALL_PICKUP_ORDERS = 2
+            ALL_DELIVERIES = 3
+            ALL_ORDERS_ASCENDING = 4
+            TOTAL_AMOUNT = 5
+            BACK_TO_PREVIOUS = 6
+            statistics_choice = input(
+                f"Please Enter the Option to Print the Statistics."
+                f"\n{ALL_DINE_IN_ORDERS} - All Dine in Orders."
+                f"\n{ALL_PICKUP_ORDERS} - All Pick up Orders."
+                f"\n{ALL_DELIVERIES} - All Deliveries."
+                f"\n{ALL_ORDERS_ASCENDING} - All Orders (Ascending Order)."
+                f"\n{TOTAL_AMOUNT} - Total Amount Spent on All Orders."
+                f"\n{BACK_TO_PREVIOUS} - To go to Previous Menu.---> ").strip()
+            if statistics_choice == ALL_DINE_IN_ORDERS:
+                self._print_all_dine()
+            elif statistics_choice == ALL_PICKUP_ORDERS:
+                self._print_pickup_statistics()
+            elif statistics_choice == ALL_DELIVERIES:
+                self._print_delivery_statistics()
+            elif statistics_choice == BACK_TO_PREVIOUS:
+                break
+            else:
+                print("Invalid choice. Please enter a valid choice.")
+
 
 ####### Restaurant Component #######
 
@@ -569,7 +608,7 @@ class Restaurant:
         user = User()
         user.request_user_information()
         self.users.append(user)
-        print("User has been successfully signed up.")
+        print("You have Successfully signed up.")
 
     def sign_in(self):
         '''
@@ -650,7 +689,7 @@ class Restaurant:
         payment = None
         if isinstance(order, DineInOrder):
             payment = DineInPayment(user, order.get_selected_items())
-        elif isinstance(order, PickupPayment):
+        elif isinstance(order, SelfPickupOrder):
             payment = PickupPayment(user, order.get_selected_items())
         elif isinstance(order, DeliveryOrder):
             if user.address == "":
