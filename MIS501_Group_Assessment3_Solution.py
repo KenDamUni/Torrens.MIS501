@@ -181,14 +181,12 @@ class Order:
     def __init__(self, user):
         self.user = user
         self.menu = Menu()
-        self.selected_items = []
 
     def process_order(self):
         pass
 
     def get_selected_items(self):
-        self.process_order()
-        return self.selected_items
+        return self.menu.selected_items
 
 
 class DineInOrder(Order):
@@ -391,7 +389,7 @@ class DineInPayment(Payment):
 
     def proceeding_order(self, order_id, total_amount):
         dine_in_payment_item = DineInPaymentItem()
-        dine_in_payment_item.username = self.user.username
+        dine_in_payment_item.username = self.user.mobile_number
         dine_in_payment_item.order_id = order_id
         dine_in_payment_item.total_amount_paid = total_amount
 
@@ -434,7 +432,7 @@ class PickupPayment(Payment):
 
     def proceeding_order(self, order_id, total_amount):
         pickup_payment_item = PickupPaymentItem()
-        pickup_payment_item.username = self.user.username
+        pickup_payment_item.username = self.user.mobile_number
         pickup_payment_item.order_id = order_id
         pickup_payment_item.total_amount_paid = total_amount
 
@@ -473,7 +471,7 @@ class DeliveryPayment(Payment):
 
     def proceeding_order(self, order_id, total_amount):
         delivery_payment_item = DeliveryPaymentItem()
-        delivery_payment_item.username = self.user.username
+        delivery_payment_item.username = self.user.mobile_number
         delivery_payment_item.order_id = order_id
         delivery_payment_item.total_amount_paid = total_amount
         delivery_payment_item.delivery_address = self.user.address
@@ -612,7 +610,8 @@ class Restaurant:
                 order = ordering.start_ordering()
                 if order is not None:
                     order.process_order()
-                    self._process_payment(user, order)
+                    if len(order.get_selected_items()) > 0:
+                        self._process_payment(user, order)
             elif user_choice == PRINT_STATISTICS:
                 pass
             elif user_choice == LOG_OUT:
@@ -626,11 +625,11 @@ class Restaurant:
         Process the payment.
         '''
         # Define application constants
-        PAYMENT = "Y"
-        CANCEL = "N"
+        PAYMENT = 'Y'
+        CANCEL = 'N'
         while True:
             payment_choice = input(f"Please Enter {PAYMENT} to proceed to Checkout or"
-                                   f"\nEnter {CANCEL} to cancel Order.\n---> ").strip()
+                                   f"\nEnter {CANCEL} to cancel Order.\n---> ").strip().capitalize()
             if payment_choice == PAYMENT:
                 payment = self._make_payment(user, order)
                 if payment is not None:
@@ -658,12 +657,12 @@ class Restaurant:
                     "\n Enter N if you would like to select other mode of order."
                 print(message)
                 while True:
-                    address_choice = input("---->").strip()
-                    if address_choice.capitalize == "Y":
+                    address_choice = input("---->").strip().capitalize()
+                    if address_choice == "Y":
                         address = input("Please enter your address: ").strip()
                         user.address = address
                         break
-                    elif address_choice.capitalize == "N":
+                    elif address_choice == "N":
                         break
                     else:
                         print("Invalid choice. Please enter a valid choice.")
