@@ -621,7 +621,7 @@ class Statistics:
         print("Order ID".ljust(20) + "Created Date".ljust(15) +
               "Total Amount Paid".ljust(20) + "Type of Order".ljust(20))
         for order in orders:
-            print(f"{order.order_id.ljust(20)}{order.created_date.strftime("%d/%m/%Y").ljust(15)}"
+            print(f"{order.order_id.ljust(20)}{order.created_date.strftime('%d/%m/%Y').ljust(15)}"
                   f"{str(order.total_amount_paid).ljust(20)}{order.type_of_order.ljust(20)}")
 
 ####### Restaurant Component #######
