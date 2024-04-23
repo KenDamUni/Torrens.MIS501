@@ -14,7 +14,7 @@ class User:
         self.address = ""
         self.orders = []
 
-    def request_user_information(self):
+    def request_user_information(self, list_existing_mobile_number):
         '''
         Request user information from the user and validate it.
         '''
@@ -41,8 +41,9 @@ class User:
             address = input("Please enter your address: ")
 
         mobile_number = input("Please enter your mobile number: ")
-        while not re.match(MOBILE_NUMBER_PATTERN, mobile_number):
-            print("Invalid mobile number. Please enter a valid mobile number.")
+        while not re.match(MOBILE_NUMBER_PATTERN, mobile_number) and mobile_number in list_existing_mobile_number:
+            print("Mobile number is invalid or existed."
+                  "Please enter a valid mobile number.")
             mobile_number = input("Please enter your mobile number: ")
 
         password = input("Please enter your Password: ")
@@ -606,7 +607,9 @@ class Restaurant:
         Sign up the user.
         '''
         user = User()
-        user.request_user_information()
+        list_existing_mobile_number = [
+            user.mobile_number for user in self.users]
+        user.request_user_information(list_existing_mobile_number)
         self.users.append(user)
         print("You have Successfully signed up.")
 
