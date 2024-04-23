@@ -412,7 +412,9 @@ class DeliveryPayment(Payment):
 
     def calculate_total_with_service_charge(self, order_amount):
         # Define application constants
-
+        FROM_0_TO_4_KM = 3
+        FROM_4_TO_8_KM = 6
+        FROM_8_TO_12_KM = 10
         service_msg = " A fix charges for delivery based on the distance."
 
     def proceeding_order(self):
@@ -495,6 +497,7 @@ class Restaurant:
                 ordering = Ordering(user)
                 order = ordering.start_ordering()
                 if order is not None:
+                    order.process_order()
                     self._process_payment(user, order)
             elif user_choice == PRINT_STATISTICS:
                 pass
