@@ -208,16 +208,11 @@ class OnlineOrder(Order):
 class SelfPickupOrder(OnlineOrder):
     def __init__(self, user):
         super().__init__(user)
-        self.pickup_time = ""
-
-    def process_order(self):
-        self.menu.process_food_menu()
 
 
 class DeliveryOrder(OnlineOrder):
     def __init__(self, user):
         super().__init__(user)
-        self.delivery_address = ""
 
 
 class Ordering:
@@ -342,36 +337,39 @@ class Payment:
         Calculate the total amount of the order.
         '''
         order_amount = 0
+        print("** Your Order Details:")
         for item in self.ordered_items:
+            print(f"{item.name.ljust(10)} - AUD {item.price}")
             order_amount += item.price
         return order_amount
 
-    def validate_date(self, date):
+    def validate_date(self, date_string):
         '''
         Validate the date.
         '''
         DATE_FORMAT = r'^\d{2}/\d{2}/\d{4}$'
-        if not re.match(DATE_FORMAT, date):
+        if not re.match(DATE_FORMAT, date_string):
             return False
-        day, month, year = map(int, date.split("/"))
         try:
-            input_date = datetime(year, month, day)
-            if input_date < datetime.now():
-                return False
+            input_date = datetime.strptime(date_string, "%d/%m/%Y")
+            current_date_string = datetime.now().strftime("%d/%m/%Y")
+            current_date = datetime.strptime(current_date_string, "%d/%m/%Y")
+            return input_date >= current_date
 
         except ValueError:
             return False
         return True
 
-    def validate_time(self, time):
+    def validate_time(self, time_string):
         '''
         Validate the time.
         '''
         TIME_FORMAT = r'^\d{2}:\d{2}$'
-        if not re.match(TIME_FORMAT, time):
+        if not re.match(TIME_FORMAT, time_string):
             return False
-        hour, minute = map(int, time.split(":"))
-        if hour < 0 or hour > 23 or minute < 0 or minute > 59:
+        try:
+            datetime.strptime(time_string, "%H:%M")
+        except ValueError:
             return False
         return True
 
@@ -383,8 +381,8 @@ class DineInPayment(Payment):
     def calculate_total_with_service_charge(self, order_amount):
         SERVICE_CHARGE = 0.15  # 15% service charge
         total_amount = order_amount + order_amount * SERVICE_CHARGE
-        print(f"Your total payable amount is: {total_amount} AUD"
-              f"including AUD {order_amount * SERVICE_CHARGE} for service charge.")
+        print(f"** Your total payable amount is: {total_amount} AUD "
+              f"including AUD {order_amount * SERVICE_CHARGE: .2f} for service charge.")
         return total_amount
 
     def proceeding_order(self, order_id, total_amount):
@@ -417,7 +415,7 @@ class DineInPayment(Payment):
                 "Please enter the Number of Persons: ")
         dine_in_payment_item.number_of_persons = dine_in_number_of_person
 
-        print("Thank You for entering the details, Your Booking is confirmed.")
+        print("----Thank You for entering the details, Your Booking is confirmed.")
         return dine_in_payment_item
 
 
@@ -427,8 +425,8 @@ class PickupPayment(Payment):
 
     def calculate_total_with_service_charge(self, order_amount):
         total_amount = order_amount
-        print(f"Your total payable amount is: {total_amount}"
-              "AUD without any service charge.")
+        print(f"** Your total payable amount is: {total_amount} AUD"
+              " without any service charge.")
 
     def proceeding_order(self, order_id, total_amount):
         pickup_payment_item = PickupPaymentItem()
@@ -454,7 +452,7 @@ class PickupPayment(Payment):
             pickup_person = input("Please enter the Name of the Person: ")
         pickup_payment_item.pickup_person = pickup_person
 
-        print("Thank You for entering the details, Your Booking is confirmed.")
+        print("---- Thank You for entering the details, Your Booking is confirmed.")
         return pickup_payment_item
 
 
@@ -496,7 +494,7 @@ class DeliveryPayment(Payment):
                   "Please select Pick up order.")
             return None
         elif delivery_charge > 0:
-            delivery_payment_item.total_amount_paid += delivery_charge
+            delivery_payment_item.total_amount_paid += int(delivery_charge)
             print(f"Your total payable amount is: {delivery_payment_item.total_amount_paid} AUD"
                   f" including AUD {delivery_charge} for delivery charge.")
         return delivery_payment_item
@@ -513,7 +511,7 @@ class DeliveryPayment(Payment):
             f"\nMore than 0 to 4 KM : ${FROM_0_TO_4_KM}" + \
             f"\nMore than 4 to 8 KM : ${FROM_4_TO_8_KM}" + \
             f"\nMore than 8 to 12 KM : ${FROM_8_TO_12_KM}" + \
-            "More than 12 KM : No delivery can be done."
+            "\nMore than 12 KM : No delivery can be done."
         print(service_msg)
         distance = input("Please enter the distance from the Restaurant: ")
         while not distance.isdigit():
