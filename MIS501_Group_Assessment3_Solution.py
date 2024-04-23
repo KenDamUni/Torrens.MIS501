@@ -302,7 +302,6 @@ class Payment:
     def __init__(self, user, ordered_items):
         self.user = user
         self.ordered_items = ordered_items
-        self.payment_item = PaymentItem()
 
     def process_payment(self):
         '''
@@ -311,7 +310,8 @@ class Payment:
         order_amount = self._calculate_order_amount()
         total_amount = self.calculate_total_with_service_charge(order_amount)
         order_id = self._create_order_id()
-        self.proceeding_order(order_id, total_amount)
+        payment_item = self.proceeding_order(order_id, total_amount)
+        return payment_item
 
     def calculate_total_with_service_charge(self, order_amount):
         '''
@@ -427,6 +427,7 @@ class PickupPayment(Payment):
         total_amount = order_amount
         print(f"** Your total payable amount is: {total_amount} AUD"
               " without any service charge.")
+        return total_amount
 
     def proceeding_order(self, order_id, total_amount):
         pickup_payment_item = PickupPaymentItem()
@@ -466,6 +467,7 @@ class DeliveryPayment(Payment):
         total_amount = order_amount + service_charge
         print(f"Your total payable amount is: {total_amount} AUD"
               " and there will be an additional charge for Delivery.")
+        return total_amount
 
     def proceeding_order(self, order_id, total_amount):
         delivery_payment_item = DeliveryPaymentItem()
@@ -494,7 +496,7 @@ class DeliveryPayment(Payment):
                   "Please select Pick up order.")
             return None
         elif delivery_charge > 0:
-            delivery_payment_item.total_amount_paid += int(delivery_charge)
+            delivery_payment_item.total_amount_paid += delivery_charge
             print(f"Your total payable amount is: {delivery_payment_item.total_amount_paid} AUD"
                   f" including AUD {delivery_charge} for delivery charge.")
         return delivery_payment_item
@@ -611,7 +613,9 @@ class Restaurant:
                     if len(order.get_selected_items()) > 0:
                         self._process_payment(user, order)
             elif user_choice == PRINT_STATISTICS:
-                pass
+                for paid_order in self.paid_orders:
+                    print(f"Order ID: {paid_order.order_id}"
+                          f" - Total Amount: {paid_order.total_amount_paid}")
             elif user_choice == LOG_OUT:
                 break
                 # Go to the main menu - Login page
@@ -631,8 +635,8 @@ class Restaurant:
             if payment_choice == PAYMENT:
                 payment = self._make_payment(user, order)
                 if payment is not None:
-                    payment.process_payment()
-                    self.paid_orders.append(payment.payment_item)
+                    payment_item = payment.process_payment()
+                    self.paid_orders.append(payment_item)
                 break
             elif payment_choice == CANCEL:
                 break
