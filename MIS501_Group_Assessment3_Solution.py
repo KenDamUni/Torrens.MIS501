@@ -41,7 +41,7 @@ class User:
             address = input("Please enter your address: ")
 
         mobile_number = input("Please enter your mobile number: ")
-        while not re.match(MOBILE_NUMBER_PATTERN, mobile_number) and mobile_number in list_existing_mobile_number:
+        while not re.match(MOBILE_NUMBER_PATTERN, mobile_number) or mobile_number in list_existing_mobile_number:
             print("Mobile number is invalid or existed."
                   "Please enter a valid mobile number.")
             mobile_number = input("Please enter your mobile number: ")
@@ -545,12 +545,12 @@ class Statistics:
     def print_statistics(self):
         while True:
             # Define application constants
-            ALL_DINE_IN_ORDERS = 1
-            ALL_PICKUP_ORDERS = 2
-            ALL_DELIVERIES = 3
-            ALL_ORDERS_ASCENDING = 4
-            TOTAL_AMOUNT = 5
-            BACK_TO_PREVIOUS = 6
+            ALL_DINE_IN_ORDERS = '1'
+            ALL_PICKUP_ORDERS = '2'
+            ALL_DELIVERIES = '3'
+            ALL_ORDERS_ASCENDING = '4'
+            TOTAL_AMOUNT = '5'
+            BACK_TO_PREVIOUS = '6'
             statistics_choice = input(
                 f"Please Enter the Option to Print the Statistics."
                 f"\n{ALL_DINE_IN_ORDERS} - All Dine in Orders."
@@ -562,14 +562,67 @@ class Statistics:
             if statistics_choice == ALL_DINE_IN_ORDERS:
                 self._print_all_dine()
             elif statistics_choice == ALL_PICKUP_ORDERS:
-                self._print_pickup_statistics()
+                self._print_all_pickup()
             elif statistics_choice == ALL_DELIVERIES:
-                self._print_delivery_statistics()
+                self._print_all_delivery()
+            elif statistics_choice == ALL_ORDERS_ASCENDING:
+                self._print_all_orders()
+            elif statistics_choice == TOTAL_AMOUNT:
+                self._print_total_amount()
             elif statistics_choice == BACK_TO_PREVIOUS:
                 break
             else:
                 print("Invalid choice. Please enter a valid choice.")
 
+    def _print_all_dine(self):
+        '''
+        Print all dine in orders.
+        '''
+        dine_in_orders = [order for order in self.paid_orders if isinstance(
+            order, DineInPaymentItem)]
+        print("All Dine in Orders:")
+        self._print_data(dine_in_orders)
+
+    def _print_all_pickup(self):
+        '''
+        Print all pickup orders.
+        '''
+        pickup_orders = [order for order in self.paid_orders if isinstance(
+            order, PickupPaymentItem)]
+        print("All Pickup Orders:")
+        self._print_data(pickup_orders)
+
+    def _print_all_delivery(self):
+        '''
+        Print all delivery orders.
+        '''
+        delivery_orders = [order for order in self.paid_orders if isinstance(
+            order, DeliveryPaymentItem)]
+        print("All Delivery Orders:")
+        self._print_data(delivery_orders)
+
+    def _print_all_orders(self):
+        '''
+        Print all orders in ascending order.
+        '''
+        self.paid_orders.sort(key=lambda x: x.total_amount_paid)
+        print("All Orders in Ascending Order:")
+        self._print_data(self.paid_orders)
+
+    def _print_total_amount(self):
+        '''
+        Print the total amount spent on all orders.
+        '''
+        total_amount = sum(
+            [order.total_amount_paid for order in self.paid_orders])
+        print(f"Total amount spent on all orders AUD: {total_amount}")
+
+    def _print_data(self, orders):
+        print("Order ID".ljust(20) + "Created Date".ljust(15) +
+              "Total Amount Paid".ljust(20) + "Type of Order".ljust(20))
+        for order in orders:
+            print(f"{order.order_id.ljust(20)}{order.created_date.strftime("%d/%m/%Y").ljust(15)}"
+                  f"{str(order.total_amount_paid).ljust(20)}{order.type_of_order.ljust(20)}")
 
 ####### Restaurant Component #######
 
@@ -655,9 +708,8 @@ class Restaurant:
                     if len(order.get_selected_items()) > 0:
                         self._process_payment(user, order)
             elif user_choice == PRINT_STATISTICS:
-                for paid_order in self.paid_orders:
-                    print(f"Order ID: {paid_order.order_id}"
-                          f" - Total Amount: {paid_order.total_amount_paid}")
+                statistics = Statistics(self.paid_orders)
+                statistics.print_statistics()
             elif user_choice == LOG_OUT:
                 break
                 # Go to the main menu - Login page
