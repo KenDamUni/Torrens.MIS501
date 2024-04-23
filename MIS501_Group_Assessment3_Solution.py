@@ -632,7 +632,10 @@ class Restaurant:
             payment_choice = input(f"Please Enter {PAYMENT} to proceed to Checkout or"
                                    f"\nEnter {CANCEL} to cancel Order.\n---> ").strip()
             if payment_choice == PAYMENT:
-                self._make_payment(user, order)
+                payment = self._make_payment(user, order)
+                if payment is not None:
+                    payment.process_payment()
+                    self.paid_orders.append(payment.payment_item)
                 break
             elif payment_choice == CANCEL:
                 break
@@ -643,6 +646,7 @@ class Restaurant:
         '''
         Make the payment.
         '''
+        payment = None
         if isinstance(order, DineInOrder):
             payment = DineInPayment(user, order.get_selected_items())
         elif isinstance(order, PickupPayment):
@@ -665,6 +669,7 @@ class Restaurant:
                         print("Invalid choice. Please enter a valid choice.")
             if user.address != "":
                 payment = DeliveryPayment(user, order.get_selected_items())
+        return payment
 
 
 ####### Main #######
