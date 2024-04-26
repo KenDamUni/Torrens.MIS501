@@ -59,7 +59,7 @@ class User:
         input_message = "Please enter your Date of Birth # DD/MM/YYYY (No Space): "
         dob = input(input_message)
 
-        while not self._validate_dob(dob):
+        while not self.__validate_dob(dob):
             print("Invalid Date of Birth. Please enter a valid Date of Birth.")
             dob = input(input_message)
 
@@ -69,7 +69,7 @@ class User:
         self.dob = dob
         self.address = address
 
-    def _validate_dob(self, dob):
+    def __validate_dob(self, dob):
         '''
         Validate the date of birth.
         '''
@@ -110,27 +110,28 @@ class Menu:
         '''
         Show the food menu.
         '''
-        self._process_food_menu(
+        self.__process_food_menu(
             f"Enter {len(self.food_items) + 1} to Check out.\n", is_check_out=True)
 
     def process_food_drink_menu(self):
         '''
         Show the food and drink menu.
         '''
-        self._process_food_menu(
+        self.__process_food_menu(
             f"Enter {len(self.food_items) + 1} for Drinks Menu.\n")
-        self._process_drink_menu()
+        self.__process_drink_menu()
 
-    def _process_food_menu(self, last_food_menu, is_check_out=False):
+    def __process_food_menu(self, last_food_menu, is_check_out=False):
         '''
         Process the food menu.
         '''
-        food_menu = self._get_menu(self.food_items)
+        food_menu = self.__get_menu(self.food_items)
         LAST_MENU_INDEX = len(self.food_items) + 1
         food_menu += last_food_menu  # Add last item to the food menu
+        print("------- Menu -------")
         print(food_menu)
         while True:
-            food_choice = input("---> ").strip()
+            food_choice = input("\n###-:").strip()
             if food_choice.isdigit():
                 choice_index = int(food_choice) - 1
                 if 0 <= choice_index < len(self.food_items):
@@ -148,14 +149,14 @@ class Menu:
                 print("Invalid choice. Please enter a valid choice.")
         return
 
-    def _process_drink_menu(self):
-        drink_menu = self._get_menu(self.drink_items)
+    def __process_drink_menu(self):
+        drink_menu = self.__get_menu(self.drink_items)
         CHECK_OUT = len(self.drink_items) + 1
         check_out_item = f"Enter {CHECK_OUT} to Check out.\n"
         drink_menu += check_out_item
         print(drink_menu)
         while True:
-            drink_choice = input("----> ").strip()
+            drink_choice = input("###-: ").strip()
             if drink_choice.isdigit():
                 choice_index = int(drink_choice) - 1
                 if 0 <= choice_index < len(self.drink_items):
@@ -169,7 +170,7 @@ class Menu:
             else:
                 print("Invalid choice. Please enter a valid choice.")
 
-    def _get_menu(self, items):
+    def __get_menu(self, items):
         menu = ""
         for index, item in enumerate(items):
             menu += f"Enter {index + 1}" + \
@@ -228,21 +229,23 @@ class Ordering:
         BACK_TO_PREVIOUS = "3"
         while True:
             ordering_choice = input(
+                f"-------------Ordering-------------\n"
                 f"Please Enter {DINE_IN} for Dine in."
                 f"\nPlease Enter {ORDER_ONLINE} for Order Online."
-                f"\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
+                f"\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu."
+                "\n###-: ").strip()
             if ordering_choice == DINE_IN:
                 self.order = DineInOrder(self.user)
                 break
             elif ordering_choice == ORDER_ONLINE:
-                self.order = self._ordering_online()
+                self.order = self.__ordering_online()
                 break
             elif ordering_choice == BACK_TO_PREVIOUS:
                 break
 
         return self.order
 
-    def _ordering_online(self):
+    def __ordering_online(self):
         # Define application constants
         SELF_PICKUP = "1"
         HOME_DELIVERY = "2"
@@ -250,9 +253,11 @@ class Ordering:
         order = None
         while True:
             ordering_ol_choice = input(
-                f"Please Enter {SELF_PICKUP} for Self Pickup."
-                f"\nPlease Enter {HOME_DELIVERY} for Home Delivery."
-                f"\nPlease Enter {BACK_TO_PREVIOUS} to go to Previous Menu.---> ").strip()
+                f"-------------Order Online-------------\n"
+                f"*Please Enter {SELF_PICKUP} for Self Pickup."
+                f"\n*Please Enter {HOME_DELIVERY} for Home Delivery."
+                f"\n*Please Enter {BACK_TO_PREVIOUS} to go to Previous Menu."
+                "\n###-: ").strip()
             if ordering_ol_choice == SELF_PICKUP:
                 order = SelfPickupOrder(self.user)
                 break
@@ -310,9 +315,9 @@ class Payment:
         '''
         Process the payment.
         '''
-        order_amount = self._calculate_order_amount()
+        order_amount = self.__calculate_order_amount()
         total_amount = self.calculate_total_with_service_charge(order_amount)
-        order_id = self._create_order_id()
+        order_id = self.__create_order_id()
         payment_item = self.proceeding_order(order_id, total_amount)
         return payment_item
 
@@ -328,14 +333,14 @@ class Payment:
         '''
         pass
 
-    def _create_order_id(self):
+    def __create_order_id(self):
         '''
         Create the order ID.
         '''
         id = random.randint(1, 999)
         return f"B{id:03}"
 
-    def _calculate_order_amount(self):
+    def __calculate_order_amount(self):
         '''
         Calculate the total amount of the order.
         '''
@@ -393,7 +398,7 @@ class DineInPayment(Payment):
         dine_in_payment_item.username = self.user.mobile_number
         dine_in_payment_item.order_id = order_id
         dine_in_payment_item.total_amount_paid = total_amount
-
+        print("-- Details for Dine in Order --")
         dine_in_date_of_visit = input(
             "Please enter the Date of Booking for Dine in: ")
         while not self.validate_date(dine_in_date_of_visit):
@@ -410,9 +415,9 @@ class DineInPayment(Payment):
                 "Please enter the Time of Booking for Dine in: ")
         dine_in_payment_item.time_of_visit = dine_in_time_of_visit
 
-        dine_in_number_of_person = input(
-            "Please enter the Number of Persons: ")
-        while not dine_in_number_of_person.isdigit():
+        dine_in_number_of_person = input("Please enter "
+                                         "the Number of Persons: ")
+        while not dine_in_number_of_person.isdigit() or int(dine_in_number_of_person) < 0:
             print("Invalid number of persons. Please enter a valid number of persons.")
             dine_in_number_of_person = input(
                 "Please enter the Number of Persons: ")
@@ -437,7 +442,7 @@ class PickupPayment(Payment):
         pickup_payment_item.username = self.user.mobile_number
         pickup_payment_item.order_id = order_id
         pickup_payment_item.total_amount_paid = total_amount
-
+        print("-- Details for Pick up Order --")
         pickup_date = input("Please enter the Date of Pickup: ")
         while not self.validate_date(pickup_date):
             print("Invalid date. Please enter a valid date.")
@@ -478,20 +483,21 @@ class DeliveryPayment(Payment):
         delivery_payment_item.order_id = order_id
         delivery_payment_item.total_amount_paid = total_amount
         delivery_payment_item.delivery_address = self.user.address
-
+        print("-- Details for Delivery Order --")
         delivery_date = input("Please enter the Date of Delivery: ")
         while not self.validate_date(delivery_date):
             print("Invalid date. Please enter a valid date.")
-            delivery_date = input("Please enter the Date of Delivery: ")
+            delivery_date = input("Please enter the Date of Delivery"
+                                  "(DD/mm/yyyy): ")
         delivery_payment_item.delivery_date = delivery_date
 
-        delivery_time = input("Please enter the Time of Delivery: ")
+        delivery_time = input("Please enter the Time of Delivery(HH:mm): ")
         while not self.validate_time(delivery_time):
             print("Invalid time. Please enter a valid time.")
             delivery_time = input("Please enter the Time of Delivery: ")
         delivery_payment_item.delivery_time = delivery_time
 
-        delivery_charge = self._calculate_delivery_charge()
+        delivery_charge = self.__calculate_delivery_charge()
 
         # Delivery can not be done for more than 12 KM.
         if delivery_charge == -1:
@@ -505,7 +511,7 @@ class DeliveryPayment(Payment):
             print("---- Thank You for your Order, Your Order has been confirmed.")
         return delivery_payment_item
 
-    def _calculate_delivery_charge(self):
+    def __calculate_delivery_charge(self):
         '''
         Calculate the delivery charge based on the distance.
         '''
@@ -513,7 +519,7 @@ class DeliveryPayment(Payment):
         FROM_0_TO_4_KM = 3
         FROM_4_TO_8_KM = 6
         FROM_8_TO_12_KM = 10
-        service_msg = " A fix charges for delivery based on the distance." + \
+        service_msg = "*A fix charges for delivery based on the distance.*" + \
             f"\nMore than 0 to 4 KM : ${FROM_0_TO_4_KM}" + \
             f"\nMore than 4 to 8 KM : ${FROM_4_TO_8_KM}" + \
             f"\nMore than 8 to 12 KM : ${FROM_8_TO_12_KM}" + \
@@ -552,64 +558,66 @@ class Statistics:
             TOTAL_AMOUNT = '5'
             BACK_TO_PREVIOUS = '6'
             statistics_choice = input(
+                f"---- Statistics ----\n"
                 f"Please Enter the Option to Print the Statistics."
                 f"\n{ALL_DINE_IN_ORDERS} - All Dine in Orders."
                 f"\n{ALL_PICKUP_ORDERS} - All Pick up Orders."
                 f"\n{ALL_DELIVERIES} - All Deliveries."
                 f"\n{ALL_ORDERS_ASCENDING} - All Orders (Ascending Order)."
                 f"\n{TOTAL_AMOUNT} - Total Amount Spent on All Orders."
-                f"\n{BACK_TO_PREVIOUS} - To go to Previous Menu.---> ").strip()
+                f"\n{BACK_TO_PREVIOUS} - To go to Previous Menu."
+                "\n###-: ").strip()
             if statistics_choice == ALL_DINE_IN_ORDERS:
-                self._print_all_dine()
+                self.__print_all_dine()
             elif statistics_choice == ALL_PICKUP_ORDERS:
-                self._print_all_pickup()
+                self.__print_all_pickup()
             elif statistics_choice == ALL_DELIVERIES:
-                self._print_all_delivery()
+                self.__print_all_delivery()
             elif statistics_choice == ALL_ORDERS_ASCENDING:
-                self._print_all_orders()
+                self.__print_all_orders()
             elif statistics_choice == TOTAL_AMOUNT:
-                self._print_total_amount()
+                self.__print_total_amount()
             elif statistics_choice == BACK_TO_PREVIOUS:
                 break
             else:
                 print("Invalid choice. Please enter a valid choice.")
 
-    def _print_all_dine(self):
+    def __print_all_dine(self):
         '''
         Print all dine in orders.
         '''
         dine_in_orders = [order for order in self.paid_orders if isinstance(
             order, DineInPaymentItem)]
-        print("All Dine in Orders:")
-        self._print_data(dine_in_orders)
+        print("----All Dine in Orders----")
+        self.__print_data(dine_in_orders)
 
-    def _print_all_pickup(self):
+    def __print_all_pickup(self):
         '''
         Print all pickup orders.
         '''
         pickup_orders = [order for order in self.paid_orders if isinstance(
             order, PickupPaymentItem)]
-        print("All Pickup Orders:")
-        self._print_data(pickup_orders)
+        print("----All Pickup Orders----")
+        self.__print_data(pickup_orders)
 
-    def _print_all_delivery(self):
+    def __print_all_delivery(self):
         '''
         Print all delivery orders.
         '''
         delivery_orders = [order for order in self.paid_orders if isinstance(
             order, DeliveryPaymentItem)]
-        print("All Delivery Orders:")
-        self._print_data(delivery_orders)
+        print("----All Delivery Orders----")
+        self.__print_data(delivery_orders)
 
-    def _print_all_orders(self):
+    def __print_all_orders(self):
         '''
         Print all orders in ascending order.
         '''
         self.paid_orders.sort(key=lambda x: x.total_amount_paid)
-        print("All Orders in Ascending Order:")
-        self._print_data(self.paid_orders)
+        print("----All Orders in Ascending Order----")
+        self.__print_data(self.paid_orders)
 
-    def _print_total_amount(self):
+    def __print_total_amount(self):
         '''
         Print the total amount spent on all orders.
         '''
@@ -617,7 +625,7 @@ class Statistics:
             [order.total_amount_paid for order in self.paid_orders])
         print(f"Total amount spent on all orders AUD: {total_amount}")
 
-    def _print_data(self, orders):
+    def __print_data(self, orders):
         print("Order ID".ljust(20) + "Created Date".ljust(15) +
               "Total Amount Paid".ljust(20) + "Type of Order".ljust(20))
         for order in orders:
@@ -641,10 +649,11 @@ class Restaurant:
 
         while True:
             # Display the main menu to the user ( Login page)
-            user_choice = input(f"Please Enter {SIGN_UP}  for Sign up."
+            user_choice = input("---- Welcome to the Restaurant ----\n"
+                                f"Please Enter {SIGN_UP}  for Sign up."
                                 f"\nPlease Enter {SIGN_IN} for Sign in."
                                 f"\nPlease Enter {QUIT} for Quit."
-                                "\n ---> ").strip()
+                                "\n###-: ").strip()
 
             if user_choice == SIGN_UP:
                 self.sign_up()
@@ -670,11 +679,12 @@ class Restaurant:
         '''
         Sign in the user.
         '''
+        print("---- Sign In ----")
         user_name = input("Please enter your Username (Mobile Number): ")
         password = input("Please enter your Password: ")
         login_user = self._verify_user(user_name, password)
         if login_user is not None:
-            self._show_home_page(login_user)
+            self.__show_home_page(login_user)
 
     def _verify_user(self, user_name, password):
         '''
@@ -687,30 +697,30 @@ class Restaurant:
         print("Invalid Username or Password. Please try again.")
         return None
 
-    def _show_home_page(self, user):
+    def __show_home_page(self, user):
         '''
         Proceed user to access system.
         '''
         # Define application constants
         START_ORDERING = "2.1"
-        PRINT_STATISTICS = "2.2"
+        STATISTIC = "2.2"
         LOG_OUT = "2.3"
         while True:
-            user_choice = input(
-                f"Please Enter {START_ORDERING} to Start ordering."
-                f"\nPlease Enter {PRINT_STATISTICS} to Print statistics."
-                f"\nPlease Enter {LOG_OUT} to Log out. --> ").strip()
-            if user_choice == START_ORDERING:
+            print(f"---- Home Page ----")
+            usr_opt = input(f"\nPlease Enter {START_ORDERING} to Start ordering."
+                            f"\nPlease Enter {STATISTIC} to Print statistics."
+                            f"\nPlease Enter {LOG_OUT} to Log out.""\n###-: ").strip()
+            if usr_opt == START_ORDERING:
                 ordering = Ordering(user)
                 order = ordering.start_ordering()
                 if order is not None:
                     order.process_order()
                     if len(order.get_selected_items()) > 0:
                         self._process_payment(user, order)
-            elif user_choice == PRINT_STATISTICS:
+            elif usr_opt == STATISTIC:
                 statistics = Statistics(self.paid_orders)
                 statistics.print_statistics()
-            elif user_choice == LOG_OUT:
+            elif usr_opt == LOG_OUT:
                 break
                 # Go to the main menu - Login page
             else:
@@ -724,8 +734,9 @@ class Restaurant:
         PAYMENT = 'Y'
         CANCEL = 'N'
         while True:
+            print("---- Payment ----")
             payment_choice = input(f"Please Enter {PAYMENT} to proceed to Checkout or"
-                                   f"\nEnter {CANCEL} to cancel Order.\n---> ").strip().capitalize()
+                                   f"\nEnter {CANCEL} to cancel Order.\n###-: ").strip().capitalize()
             if payment_choice == PAYMENT:
                 payment = self._make_payment(user, order)
                 if payment is not None:
@@ -753,7 +764,7 @@ class Restaurant:
                     "\n Enter N if you would like to select other mode of order."
                 print(message)
                 while True:
-                    address_choice = input("---->").strip().capitalize()
+                    address_choice = input("\n###-: ").strip().capitalize()
                     if address_choice == "Y":
                         address = input("Please enter your address: ").strip()
                         user.address = address
