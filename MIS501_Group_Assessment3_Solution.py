@@ -706,7 +706,7 @@ class Restaurant:
         STATISTIC = "2.2"
         LOG_OUT = "2.3"
         while True:
-            print(f"---- Home Page ----")
+            print("---- Home Page ----")
             usr_opt = input(f"\nPlease Enter {START_ORDERING} to Start ordering."
                             f"\nPlease Enter {STATISTIC} to Print statistics."
                             f"\nPlease Enter {LOG_OUT} to Log out.""\n###-: ").strip()
