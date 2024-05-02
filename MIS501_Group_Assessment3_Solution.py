@@ -178,6 +178,8 @@ class Menu:
         return menu
 ####### Order Component #######
 
+# Order class is an abstract base class
+
 
 class Order:
     def __init__(self, user):
@@ -190,6 +192,8 @@ class Order:
     def get_selected_items(self):
         return self.menu.selected_items
 
+# DineInOrder class is a concrete class of Order class for Dine in order
+
 
 class DineInOrder(Order):
     def __init__(self, user):
@@ -197,6 +201,8 @@ class DineInOrder(Order):
 
     def process_order(self):
         self.menu.process_food_drink_menu()
+
+# OnlineOrder class is a concrete class of Order class for Online order
 
 
 class OnlineOrder(Order):
@@ -206,15 +212,21 @@ class OnlineOrder(Order):
     def process_order(self):
         self.menu.process_food_menu()
 
+# SelfPickupOrder class is a concrete class of OnlineOrder class for Self Pickup order
+
 
 class SelfPickupOrder(OnlineOrder):
     def __init__(self, user):
         super().__init__(user)
 
+# DeliveryOrder class is a concrete class of OnlineOrder class for Delivery order
+
 
 class DeliveryOrder(OnlineOrder):
     def __init__(self, user):
         super().__init__(user)
+
+# Ordering class is a component to start the ordering process
 
 
 class Ordering:
@@ -244,6 +256,7 @@ class Ordering:
                 break
 
         return self.order
+    # a private method to order online
 
     def __ordering_online(self):
         # Define application constants
@@ -270,6 +283,8 @@ class Ordering:
 
 ####### Payment Component #######
 
+# PaymentItem class is an abstract base class
+
 
 class PaymentItem:
     def __init__(self):
@@ -277,6 +292,8 @@ class PaymentItem:
         self.order_id = ""
         self.created_date = datetime.now()
         self.total_amount_paid = 0
+
+# DineInPaymentItem class is a concrete class of PaymentItem class for Dine in payment
 
 
 class DineInPaymentItem(PaymentItem):
@@ -287,6 +304,8 @@ class DineInPaymentItem(PaymentItem):
         self.date_of_visit = ""
         self.time_of_visit = ""
 
+# PickupPaymentItem class is a concrete class of PaymentItem class for Pickup payment
+
 
 class PickupPaymentItem(PaymentItem):
     def __init__(self):
@@ -295,6 +314,8 @@ class PickupPaymentItem(PaymentItem):
         self.pickup_time = ""
         self.pickup_date = ""
         self.pickup_person = ""
+
+# DeliveryPaymentItem class is a concrete class of PaymentItem class for Delivery payment
 
 
 class DeliveryPaymentItem(PaymentItem):
@@ -310,28 +331,35 @@ class Payment:
     def __init__(self, user, ordered_items):
         self.user = user
         self.ordered_items = ordered_items
+    # a method to process the payment in multiple steps
 
     def process_payment(self):
         '''
         Process the payment.
         '''
-        order_amount = self.__calculate_order_amount()
-        total_amount = self.calculate_total_with_service_charge(order_amount)
-        order_id = self.__create_order_id()
-        payment_item = self.proceeding_order(order_id, total_amount)
+        order_amount = self.__calculate_order_amount(
+        )  # calculate the total amount of the order
+        total_amount = self.calculate_total_with_service_charge(
+            order_amount)  # calculate the total amount with service charge
+        order_id = self.__create_order_id()  # create the order ID
+        payment_item = self.proceeding_order(
+            order_id, total_amount)  # proceed the order
         return payment_item
+    # abstract method to calculate the total amount with service charge
 
     def calculate_total_with_service_charge(self, order_amount):
         '''
         Calculate the service charge.
         '''
         pass
+    # abstract method to proceed the order
 
     def proceeding_order(self, order_id, total_amount):
         '''
         Proceed the order.
         '''
         pass
+    # a private method to create the order ID, following the format Bxxx
 
     def __create_order_id(self):
         '''
@@ -339,6 +367,7 @@ class Payment:
         '''
         id = random.randint(1, 999)
         return f"B{id:03}"
+    # a private method to calculate the total amount of the order
 
     def __calculate_order_amount(self):
         '''
@@ -350,6 +379,7 @@ class Payment:
             print(f"{item.name.ljust(10)} - AUD {item.price}")
             order_amount += item.price
         return order_amount
+    # a method to validate the date can be used in subclasses
 
     def validate_date(self, date_string):
         '''
@@ -366,8 +396,8 @@ class Payment:
 
         except ValueError:
             return False
-        return True
 
+    # a method to validate the time can be used in subclasses
     def validate_time(self, time_string):
         '''
         Validate the time.
@@ -381,10 +411,13 @@ class Payment:
             return False
         return True
 
+# DineInPayment class is a concrete class of Payment class for Dine in payment
+
 
 class DineInPayment(Payment):
     def __init__(self, user, ordered_items):
         super().__init__(user, ordered_items)
+    # the implementation of the abstract method to calculate the total amount with service charge
 
     def calculate_total_with_service_charge(self, order_amount):
         SERVICE_CHARGE = 0.15  # 15% service charge
@@ -392,6 +425,7 @@ class DineInPayment(Payment):
         print(f"** Your total payable amount is: {total_amount} AUD "
               f"including AUD {order_amount * SERVICE_CHARGE: .2f} for service charge.")
         return total_amount
+    # the implementation of the abstract method to proceed the order
 
     def proceeding_order(self, order_id, total_amount):
         dine_in_payment_item = DineInPaymentItem()
@@ -430,12 +464,14 @@ class DineInPayment(Payment):
 class PickupPayment(Payment):
     def __init__(self, user, ordered_items):
         super().__init__(user, ordered_items)
+    # the implementation of the abstract method to calculate the total amount with service charge
 
     def calculate_total_with_service_charge(self, order_amount):
         total_amount = order_amount
         print(f"** Your total payable amount is: {total_amount} AUD"
               " without any service charge.")
         return total_amount
+    # the implementation of the abstract method to proceed the order
 
     def proceeding_order(self, order_id, total_amount):
         pickup_payment_item = PickupPaymentItem()
@@ -464,11 +500,14 @@ class PickupPayment(Payment):
         print("---- Thank You for entering the details, Your Booking is confirmed.")
         return pickup_payment_item
 
+# DeliveryPayment class is a concrete class of Payment class for Delivery payment
+
 
 class DeliveryPayment(Payment):
     def __init__(self, user, ordered_items):
         super().__init__(user, ordered_items)
         self.distance = 0
+    # the implementation of the abstract method to calculate the total amount with service charge
 
     def calculate_total_with_service_charge(self, order_amount):
         service_charge = 0
@@ -476,6 +515,7 @@ class DeliveryPayment(Payment):
         print(f"Your total payable amount is: {total_amount} AUD"
               " and there will be an additional charge for Delivery.")
         return total_amount
+    # the implementation of the abstract method to proceed the order
 
     def proceeding_order(self, order_id, total_amount):
         delivery_payment_item = DeliveryPaymentItem()
@@ -530,6 +570,7 @@ class DeliveryPayment(Payment):
             print("Invalid distance. Please enter a valid distance.")
             distance = input("Please enter the distance from the Restaurant: ")
         self.distance = distance
+        # Calculate the delivery charge based on the distance
         if 0 < int(distance) <= 4:
             return FROM_0_TO_4_KM
         elif 4 < int(distance) <= 8:
@@ -549,6 +590,9 @@ class Statistics:
         self.paid_orders = paid_orders
 
     def print_statistics(self):
+        '''
+        Print the statistics.
+        '''
         while True:
             # Define application constants
             ALL_DINE_IN_ORDERS = '1'
@@ -595,6 +639,7 @@ class Statistics:
         '''
         Print all pickup orders.
         '''
+        # Filter all pickup orders
         pickup_orders = [order for order in self.paid_orders if isinstance(
             order, PickupPaymentItem)]
         print("----All Pickup Orders----")
@@ -604,6 +649,7 @@ class Statistics:
         '''
         Print all delivery orders.
         '''
+        # Filter all delivery orders
         delivery_orders = [order for order in self.paid_orders if isinstance(
             order, DeliveryPaymentItem)]
         print("----All Delivery Orders----")
