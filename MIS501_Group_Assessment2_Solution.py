@@ -1,10 +1,15 @@
 import re
 # Define application constants
 CURRENT_YEAR = 2021
+# full name must contain only alphabets and spaces.
+FULL_NAME_PATTERN = r'^[A-Za-z\s]+$'
+# Phone number must start with '0' and have 10 digits.
 MOBILE_NUMBER_PATTERN = r'^0\d{9}$'
+# Password must start with a letter and end with a digit. It must contain either '@' or '&' or '#'.
 PASSWORD_PATTERN = r'^[a-zA-Z].*[@&#].*\d$'
+# Date of birth must be in the format dd/mm/yyyy.
 DATE_FORMAT = r'^\d{2}/\d{2}/\d{4}$'
-MAX_VALUE_OF_LOGIN_ATTEMPTS = 3
+MAX_VALUE_OF_LOGIN_ATTEMPTS = 3  # Maximum number of login attempts
 
 ################### Task 2A ###################
 
@@ -59,40 +64,42 @@ def sign_up():
     '''
     Register a new user.
     '''
-    # Define steps for user registration
-    step = 1  # Initial step
-    while True:
-        if step == 1:  # Step 1: Enter full name
-            full_name = input("Enter a full name: ")
-            if len(full_name) < 3:
-                print("Name must be at least 3 characters long.")
-            else:
-                step += 1  # Move to next step
-        if step == 2:  # Step 2: Enter mobile number
-            user_mobile_number = input("Enter a mobile number: ")
-            # Validate mobile number
-            if not validate_mobile_number(user_mobile_number):
-                print("Invalid mobile number. Please enter a valid number.")
-                # Continue to the same step if mobile number is invalid
-            else:
-                step += 1  # Move to next step
-        if step == 3:  # Step 3: Enter password
-            password = input("Enter a password: ")
-            if not validate_password(password):
-                print("Invalid password. Please enter a valid password.")
-            else:
-                step += 1
-        if step == 4:  # Step 4: Enter date of birth
-            dob = input("Enter your date of birth (dd/mm/yyyy): ")
-            if not validate_dob(dob):
-                print("Invalid date of birth. Please enter a valid date of birth.")
-            else:  # Register user if all information is valid
-                user_full_names.append(full_name.strip())
-                user_passwords.append(password)
-                user_mobile_numbers.append(user_mobile_number.strip())
-                user_dobs.append(dob.strip())
-                print("User registered successfully.")
-                break
+    # Get user details
+    # Input full name
+    full_name = input("Please enter your name: ")
+    while len(full_name) < 3 or not re.match(FULL_NAME_PATTERN, full_name):
+        print("Fullname must be at least 3 characters long and have only alphabets and spaces.")
+        full_name = input("Please enter your name: ")
+    # Input mobile number
+    user_mobile_number = input("Please enter your mobile number: ")
+    while not validate_mobile_number(user_mobile_number) or user_mobile_number in user_mobile_numbers:
+        print("You have enter the invalid mobile number or the mobile number already exists."
+              "\nPlease start again:")
+        user_mobile_number = input("Please enter your mobile number: ")
+
+    # Input password
+    password = input("Please enter your password: ")
+    while not validate_password(password):
+        print("You have enter the invalid password."
+              "\nPlease enter a valid password.")
+        password = input("Please enter your password: ")
+    # Confirm password
+    confirm_password = input("Please confirm your Password: ")
+    while password != confirm_password:
+        print("Passwords do not match. Please start again.")
+        confirm_password = input("Please confirm your Password: ")
+    # Input Date of Birth
+    dob = input("Please enter your Date of Birth (DD/MM/YYYY) (No Space): ")
+    while not validate_dob(dob):
+        print("You have enter the Date of Birth in invalid format."
+              "\nPlease enter a valid date of birth.")
+        dob = input("Please enter your Date of Birth (DD/MM/YYYY) (No Space): ")
+
+    user_full_names.append(full_name.strip())
+    user_passwords.append(password)
+    user_mobile_numbers.append(user_mobile_number.strip())
+    user_dobs.append(dob.strip())
+    print("You have successfully Signed up.")
 
 ################### Task 2B ###################
 
@@ -114,11 +121,9 @@ def get_user_details(username):
     if username in user_mobile_numbers:
         index = user_mobile_numbers.index(username)
         # Return user information in a tuple
-        user_info = (user_full_names[index], username)
+        return (user_full_names[index], username)
     else:
-        user_info = None
-
-    return user_info
+        return None
 
 
 def sign_in():
@@ -129,21 +134,24 @@ def sign_in():
     password = input("Please enter your password: ")
     is_valid_user = False
     if username in user_mobile_numbers:
-        counting_of_login_attempts = 0
+        counting_of_login_attempts = 1  # Initialize counting of login attempts
+        # Check the maximum number of login attempts
         while counting_of_login_attempts < MAX_VALUE_OF_LOGIN_ATTEMPTS:
             is_valid_user = verify_user(username, password)
             if is_valid_user:
-                print("You have successfully Signed in!")
+                (full_name, mobile_number) = get_user_details(username)
+                print(
+                    f"Welcome {full_name}!\nYou have successfully Signed in!")
                 break
             else:
-                print("You have entered the wrong Password. Please try again.")
+                print("You have entered the wrong Password.\nPlease try again.")
                 counting_of_login_attempts += 1
                 password = input("Please enter your password: ")
 
         if not is_valid_user:
             print("You have used the maximum number of attempts of Login")
             # Request for password change after exceeding the maximum number of login attempts
-            request_change_password()
+            reset_password_by_unsuccessful_login()
         else:
             # Process next step after signing in
             process_signed_in_user(username)
@@ -163,56 +171,81 @@ def process_signed_in_user(username):
     user_info = get_user_details(username)
     if user_info:
         full_name, username = user_info  # Unpack user information from the tuple
-        print(f"Welcome {full_name}!")
         while True:
-            user_choice = input(f"Please enter {RESETTING_PASSWORD} for resetting password."
-                                f"\n Please enter {SIGN_OUT} for signing out.")
-            if user_choice == RESETTING_PASSWORD:
-                reset_password(username)
-            else:
+            user_choice = input(f"Please enter {RESETTING_PASSWORD} for Resetting password."
+                                f"\nPlease enter {SIGN_OUT} for Sign out.")
+            if user_choice.strip() == RESETTING_PASSWORD:
+                confirm_username = input(
+                    "Please enter your Username (Mobile Number): ")
+                current_pwd = input('Please enter your old password:')
+                if (confirm_username != username):
+                    print("You have entered wrong username.")
+                else:
+                    if verify_user(username, current_pwd):
+                        reset_password_from_menu(username)
+                    else:
+                        print("You have entered wrong password.")
+            elif user_choice.strip() == SIGN_OUT:
                 print("You have successfully signed out.")
                 break
     else:
         print("User not found.")
 
 
-def request_change_password():
+def reset_password_by_unsuccessful_login():
     '''
-    Request for password change.
+    Reset password for a user after exceeding the maximum number of login attempts.
     '''
     print("Please reset the password by entering the following details:")
-    username_for_confirming = input(
-        "Please enter your Username (Mobile Number) to confirm: ").strip()
+    while True:
+        username_for_confirming = input(
+            "Please enter your Username (Mobile Number) to confirm: ").strip()
+        if username_for_confirming in user_mobile_numbers:
+            # Get the index of the username (Mobile Number)
+            index = user_mobile_numbers.index(username_for_confirming)
 
-    if username_for_confirming in user_mobile_numbers:
-        index = user_mobile_numbers.index(username_for_confirming)
-        dob_for_confirming = input(
-            "Please enter your Date of Birth in DD/MM/YYYY format to confirm: ")
-        if dob_for_confirming.strip() == user_dobs[index]:
-            reset_password(username_for_confirming)
-    else:
-        print("User not found")
+            dob_for_confirming = input(
+                "Please enter your Date of Birth in DD/MM/YYYY format to confirm: ")
+            if dob_for_confirming.strip() == user_dobs[index]:
+                new_password = input("Please enter your new password: ")
+                if validate_password(new_password):
+                    confirm_password = input("Please re-enter your password: ")
+                    if new_password != confirm_password:
+                        print("Passwords do not match. Please try again.")
+                    else:
+                        # validate if the new password is not the same as the old password
+                        if new_password == user_passwords[index]:
+                            print("You cannot use the password used earlier.")
+                        else:
+                            # Update the password
+                            user_passwords[index] = new_password
+                            print("Your Password have been reset successfully.")
+                            break
+                else:
+                    print("Invalid password. Please enter a valid password.")
+            else:
+                print("Date of Birth does not match.")
+        else:
+            print("User not found")
 
 
-def reset_password(username):
+def reset_password_from_menu(username):
     '''
-    Reset password for a user.
+    Reset password for a user from the menu.
     '''
     while True:
         new_password = input("Enter new password: ")
         if validate_password(new_password):
-            # Update password if it is valid
+            # Validate password if it is valid
             index = user_mobile_numbers.index(username)
             # Get the index of the username (Mobile Number)
-            old_password = user_passwords[index]
-            # Check if the new password is the same as the old password
-            if old_password == new_password:
-                print("New password cannot be the same as the old password.")
-                continue
+            confirm_password = input("Please re-enter password: ")
+            if new_password != confirm_password:
+                print("Passwords do not match. Please try again.")
             else:
                 # Update the password
                 user_passwords[index] = new_password
-                print("Password reset successfully.")
+                print("Your Password have been reset successfully.")
                 break
         else:
             print("Invalid password. Please enter a valid password.")
@@ -247,8 +280,6 @@ user_full_names = []
 user_passwords = []
 user_mobile_numbers = []
 user_dobs = []
-
-while True:
-    # Process user choice until the user quits the application
-    if not process():
-        break
+# Process user choice
+while process():
+    pass
